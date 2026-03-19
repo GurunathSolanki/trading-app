@@ -127,6 +127,47 @@ function App() {
       );
     }
 
+    // Auto-calc total_profit (interest + actual_profit)
+    const interestVal = Number(updatedForm.interest) || 0;
+    const actualProfitVal = Number(updatedForm.actual_profit) || 0;
+
+    updatedForm.total_profit = interestVal + actualProfitVal;
+
+
+    // Auto-calc percent (to 2 decimals)
+    if (updatedForm.entry_date && updatedForm.exit_date && updatedForm.options_trading_amount) {
+      const start = new Date(updatedForm.entry_date);
+      const end = new Date(updatedForm.exit_date);
+      const diffDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+      if (diffDays > 0 && updatedForm.options_trading_amount > 0) {
+        updatedForm.percent = (
+          (updatedForm.total_profit * 365 * 100) /
+          (diffDays * Number(updatedForm.options_trading_amount))
+        ).toFixed(2); // ✅ ensures two decimal places
+      } else {
+        updatedForm.percent = "0.00";
+      }
+    }
+
+    // Auto-calc mf_profit (to 2 decimals)
+    if (updatedForm.entry_date && updatedForm.exit_date && updatedForm.mf_trading_amount && updatedForm.pnl) {
+      const start = new Date(updatedForm.entry_date);
+      const end = new Date(updatedForm.exit_date);
+      const diffDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+      if (diffDays > 0 && updatedForm.mf_trading_amount > 0) {
+        updatedForm.mf_profit = (
+          (updatedForm.pnl * 365 * 100) /
+          (diffDays * Number(updatedForm.mf_trading_amount))
+        ).toFixed(2);
+      } else {
+        updatedForm.mf_profit = "0.00";
+      }
+    }
+
+
+
     setForm(updatedForm);
   }
 
@@ -148,27 +189,53 @@ function App() {
           value={form.required_profit || ""}
           readOnly
         />
-        <input type="number" placeholder="Interest"
-          value={form.interest}
-          onChange={(e) => setForm({ ...form, interest: e.target.value })} />
-        <input type="number" placeholder="Actual Profit"
-          value={form.actual_profit}
-          onChange={(e) => setForm({ ...form, actual_profit: e.target.value })} />
-        <input type="number" placeholder="Total Profit"
-          value={form.total_profit}
-          onChange={(e) => setForm({ ...form, total_profit: e.target.value })} />
-        <input type="number" placeholder="Percent"
-          value={form.percent}
-          onChange={(e) => setForm({ ...form, percent: e.target.value })} />
-        <input type="number" placeholder="MF Amount"
-          value={form.mf_trading_amount}
-          onChange={(e) => setForm({ ...form, mf_trading_amount: e.target.value })} />
-        <input type="number" placeholder="PnL"
-          value={form.pnl}
-          onChange={(e) => setForm({ ...form, pnl: e.target.value })} />
-        <input type="number" placeholder="MF Profit"
-          value={form.mf_profit}
-          onChange={(e) => setForm({ ...form, mf_profit: e.target.value })} />
+        <input
+          type="number"
+          placeholder="Interest"
+          value={form.interest || ""}
+          onChange={(e) => handleChange("interest", e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="Actual Profit"
+          value={form.actual_profit || ""}
+          onChange={(e) => handleChange("actual_profit", e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="Total Profit"
+          value={form.total_profit || ""}
+          readOnly
+        />
+        <input
+          type="number"
+          placeholder="Percent"
+          value={form.percent || ""}
+          readOnly
+        />
+
+        <input
+          type="number"
+          placeholder="MF Trading Amount"
+          value={form.mf_trading_amount || ""}
+          onChange={(e) => handleChange("mf_trading_amount", e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="PnL"
+          value={form.pnl || ""}
+          onChange={(e) => handleChange("pnl", e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="MF Profit Percent"
+          value={form.mf_profit || ""}
+          readOnly
+        />
         <button type="submit">Add Trade</button>
       </form>
       <h3>Trade History</h3>
