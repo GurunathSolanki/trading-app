@@ -172,110 +172,122 @@ function App() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Trading Log</h2>
-      <form onSubmit={addTrade}>
-        <input type="date" value={form.entry_date}
-          onChange={(e) => handleChange("entry_date", e.target.value)} />
+    <div className="container py-4">
+      <h2 className="text-center mb-4">Trading Log</h2>
 
-        <input type="date" value={form.exit_date}
-          onChange={(e) => handleChange("exit_date", e.target.value)} />
+      <form onSubmit={addTrade} className="row g-3">
+        <div className="col-md-6">
+          <input type="date" className="form-control"
+            value={form.entry_date}
+            onChange={(e) => handleChange("entry_date", e.target.value)} />
+        </div>
 
-        <input type="number" placeholder="Options Amount"
-          value={form.options_trading_amount}
-          onChange={(e) => handleChange("options_trading_amount", e.target.value)} />
+        <div className="col-md-6">
+          <input type="date" className="form-control"
+            value={form.exit_date}
+            onChange={(e) => handleChange("exit_date", e.target.value)} />
+        </div>
 
-        <input type="number" placeholder="Required Profit"
-          value={form.required_profit || ""}
-          readOnly
-        />
-        <input
-          type="number"
-          placeholder="Interest"
-          value={form.interest || ""}
-          onChange={(e) => handleChange("interest", e.target.value)}
-        />
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="Options Amount"
+            value={form.options_trading_amount}
+            onChange={(e) => handleChange("options_trading_amount", e.target.value)} />
+        </div>
 
-        <input
-          type="number"
-          placeholder="Actual Profit"
-          value={form.actual_profit || ""}
-          onChange={(e) => handleChange("actual_profit", e.target.value)}
-        />
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="Required Profit"
+            value={form.required_profit || ""}
+            readOnly />
+        </div>
 
-        <input
-          type="number"
-          placeholder="Total Profit"
-          value={form.total_profit || ""}
-          readOnly
-        />
-        <input
-          type="number"
-          placeholder="Percent"
-          value={form.percent || ""}
-          readOnly
-        />
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="Interest"
+            value={form.interest || ""}
+            onChange={(e) => handleChange("interest", e.target.value)} />
+        </div>
 
-        <input
-          type="number"
-          placeholder="MF Trading Amount"
-          value={form.mf_trading_amount || ""}
-          onChange={(e) => handleChange("mf_trading_amount", e.target.value)}
-        />
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="Actual Profit"
+            value={form.actual_profit || ""}
+            onChange={(e) => handleChange("actual_profit", e.target.value)} />
+        </div>
 
-        <input
-          type="number"
-          placeholder="PnL"
-          value={form.pnl || ""}
-          onChange={(e) => handleChange("pnl", e.target.value)}
-        />
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="Total Profit"
+            value={form.total_profit || ""}
+            readOnly />
+        </div>
 
-        <input
-          type="number"
-          placeholder="MF Profit Percent"
-          value={form.mf_profit || ""}
-          readOnly
-        />
-        <button type="submit">Add Trade</button>
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="Percent"
+            value={form.percent || ""}
+            readOnly />
+        </div>
+
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="MF Trading Amount"
+            value={form.mf_trading_amount || ""}
+            onChange={(e) => handleChange("mf_trading_amount", e.target.value)} />
+        </div>
+
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="PnL"
+            value={form.pnl || ""}
+            onChange={(e) => handleChange("pnl", e.target.value)} />
+        </div>
+
+        <div className="col-md-6">
+          <input type="number" className="form-control" placeholder="MF Profit Percent"
+            value={form.mf_profit || ""}
+            readOnly />
+        </div>
+
+        <div className="col-12">
+          <button type="submit" className="btn btn-primary w-100">Add Trade</button>
+        </div>
       </form>
-      <h3>Trade History</h3>
-      <table border="1" cellPadding="5">
-        <thead>
-          <tr>
-            <th>Entry Date</th>
-            <th>Exit Date</th>
-            <th>Options Amount</th>
-            <th>Required Profit</th>
-            <th>Interest</th>
-            <th>Actual Profit</th>
-            <th>Total Profit</th>
-            <th>Percent</th>
-            <th>MF Amount</th>
-            <th>PnL</th>
-            <th>MF Profit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trades.map((t) => (
-            <tr key={t.id}>
-              <td>{t.entry_date}</td>
-              <td>{t.exit_date}</td>
-              <td>{t.options_trading_amount}</td>
-              <td>{t.required_profit}</td>
-              <td>{t.interest}</td>
-              <td>{t.actual_profit}</td>
-              <td>{t.total_profit}</td>
-              <td>{t.percent}</td>
-              <td>{t.mf_trading_amount}</td>
-              <td>{t.pnl}</td>
-              <td>{t.mf_profit}</td>
-              <td>
-                <button onClick={() => startEdit(t)}>Edit</button>
-              </td>
+
+      <h3 className="mt-5">Trade History</h3>
+      <div className="table-responsive">
+        <table className="table table-striped table-bordered">
+          <thead className="table-light">
+            <tr>
+              <th>Entry Date</th>
+              <th>Exit Date</th>
+              <th>Options Amount</th>
+              <th>Required Profit</th>
+              <th>Interest</th>
+              <th>Actual Profit</th>
+              <th>Total Profit</th>
+              <th>Percent</th>
+              <th>MF Amount</th>
+              <th>PnL</th>
+              <th>MF Profit</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {trades.map((t) => (
+              <tr key={t.id}>
+                <td>{t.entry_date}</td>
+                <td>{t.exit_date}</td>
+                <td>{t.options_trading_amount}</td>
+                <td>{t.required_profit}</td>
+                <td>{t.interest}</td>
+                <td>{t.actual_profit}</td>
+                <td>{t.total_profit}</td>
+                <td>{t.percent}</td>
+                <td>{t.mf_trading_amount}</td>
+                <td>{t.pnl}</td>
+                <td>{t.mf_profit}</td>
+                <td>
+                  <button className="btn btn-warning btn-sm" onClick={() => startEdit(t)}>Edit</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
