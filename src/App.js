@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import JournalPage from "./JournalPage";
 import PerformancePage from "./PerformancePage";
 import DashboardPage from "./DashboardPage";
 import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify"; // New import for notifications
 import "react-toastify/dist/ReactToastify.css"; // New import for styles
+import { NavLink } from "react-router-dom";
+
 
 function AppContent() {
-  const location = useLocation();
   const fetchOnceRef = useRef(false);
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true); // New state for loading
@@ -194,17 +195,40 @@ function AppContent() {
   return (
     <div className="container my-5" style={{ fontFamily: 'Roboto, sans-serif' }}>
       {/* Updated Navbar with Branding and Active Highlighting */}
+
+
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
         <div className="container-fluid">
-          <span className="navbar-brand fw-bold" style={{ color: '#17a2b8' }}>📊 Trading Journal</span> {/* Branded logo/text */}
-          <div className="navbar-nav ms-auto">
-            <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Dashboard</Link>
-            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Journal</Link>
-            <Link to="/performance" className={`nav-link ${location.pathname === '/performance' ? 'active' : ''}`}>Performance</Link>
-            <Link to="/settings" className="nav-link">Settings</Link> {/* Placeholder for future */}
+          {/* Brand */}
+          <span className="navbar-brand fw-bold" style={{ color: '#17a2b8' }}>
+            📊 Trading Journal
+          </span>
+
+          {/* Hamburger toggle for mobile */}
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          {/* Collapsible nav links */}
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <div className="navbar-nav ms-auto">
+              <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
+              <NavLink to="/" className="nav-link">Journal</NavLink>
+              <NavLink to="/performance" className="nav-link">Performance</NavLink>
+              <NavLink to="/settings" className="nav-link">Settings</NavLink>
+            </div>
           </div>
         </div>
       </nav>
+
 
       {/* Loading Spinner */}
       {loading && <div className="text-center"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>}
