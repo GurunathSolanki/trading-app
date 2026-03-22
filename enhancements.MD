@@ -1,0 +1,13 @@
+- Dynamic calculations for other fields
+- Auto‑populate pnl, total_profit, and percent based on inputs.
+- Example: pnl = actual_profit + mf_profit - interest.
+- Inline editing in the table
+- Instead of clicking “Edit” → filling the form → saving, allow editing directly inside the table cells.
+- Validation & UX improvements
+- Prevent invalid dates (exit before entry).
+- Highlight required fields.
+- Show error messages if Supabase insert/update fails.
+- Summary row at the bottom
+- Show cumulative totals (e.g., sum of total_profit, average percent) for quick performance view.
+- Delete functionality
+- Add a “Delete” button per row to remove trades.
