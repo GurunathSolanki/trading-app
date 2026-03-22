@@ -176,7 +176,7 @@ function App() {
       {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
         <div className="container-fluid">
-          <a className="navbar-brand fw-bold" href="#">Trading Log</a>
+          <span className="navbar-brand fw-bold">Trading Log</span>
         </div>
       </nav>
 
