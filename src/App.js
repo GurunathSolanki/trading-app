@@ -7,6 +7,7 @@ import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify"; // New import for notifications
 import "react-toastify/dist/ReactToastify.css"; // New import for styles
 import { NavLink } from "react-router-dom";
+import "./App.css";
 
 
 function AppContent() {

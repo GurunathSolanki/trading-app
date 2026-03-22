@@ -26,18 +26,33 @@ export default function PerformanceChart({ trades }) {
     labels: trades.map(t => t.exit_date),
     datasets: [
       {
-        label: showAbsolute ? 'Options Cumulative Profit' : 'Options %',
+        label: showAbsolute ? "Options Cumulative Profit" : "Options %",
         data: showAbsolute ? cumulativeOptionsData : trades.map(t => t.percent),
-        borderColor: 'rgba(23, 162, 184, 1)', // Teal
-        backgroundColor: 'rgba(23, 162, 184, 0.2)',
+        borderColor: "#0f766e",
+        backgroundColor: "rgba(15, 118, 110, 0.18)",
+        pointBackgroundColor: "#0f766e",
         tension: 0.3,
+        fill: true,
       },
       {
-        label: showAbsolute ? 'MF Cumulative PnL' : 'MF %',
+        label: showAbsolute ? "MF Cumulative PnL" : "MF %",
         data: showAbsolute ? cumulativeMFData : trades.map(t => t.mf_profit),
-        borderColor: 'rgba(220, 53, 69, 1)', // Crimson
-        backgroundColor: 'rgba(220, 53, 69, 0.2)',
+        borderColor: "#dc3545",
+        backgroundColor: "rgba(220, 53, 69, 0.18)",
+        pointBackgroundColor: "#dc3545",
         tension: 0.3,
+        fill: true,
+      },
+      {
+        label: "Cumulative Growth",
+        data: showAbsolute
+          ? cumulativeOptionsData.map((v, i) => v + cumulativeMFData[i])
+          : trades.map(t => Number(t.percent || 0) + Number(t.mf_profit || 0)),
+        borderColor: "#6d28d9",
+        backgroundColor: "rgba(109, 40, 217, 0.12)",
+        pointBackgroundColor: "#6d28d9",
+        tension: 0.3,
+        fill: false,
       },
     ],
   };

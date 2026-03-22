@@ -3,7 +3,7 @@ import PerformanceChart from "./PerformanceChart";
 export default function PerformancePage({ trades }) {
   return (
     <div className="card shadow-sm">
-      <div className="card-header bg-info text-white fw-semibold">
+      <div className="card-header" style={{ backgroundColor: "var(--brand-secondary)", color: "#fff", fontWeight: 600 }}>
         Performance Comparison
       </div>
       <div className="card-body">
