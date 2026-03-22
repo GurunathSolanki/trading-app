@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import JournalPage from "./JournalPage";
 import PerformancePage from "./PerformancePage";
+import DashboardPage from "./DashboardPage";
 import { supabase } from "./supabaseClient";
+import { ToastContainer, toast } from "react-toastify"; // New import for notifications
+import "react-toastify/dist/ReactToastify.css"; // New import for styles
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const fetchOnceRef = useRef(false);
   const [trades, setTrades] = useState([]);
+  const [loading, setLoading] = useState(true); // New state for loading
   const [form, setForm] = useState({
     entry_date: "",
     exit_date: "",
@@ -23,13 +29,23 @@ function App() {
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
+    if (fetchOnceRef.current) return;
+    fetchOnceRef.current = true;
     fetchTrades();
   }, []);
 
   async function fetchTrades() {
+    setLoading(true);
+    console.log("Fetching trades from Supabase...");
     const { data, error } = await supabase.from("trading").select("*");
-    if (error) console.error(error);
-    else setTrades(data);
+    if (error) {
+      console.error(error);
+      toast.error("Failed to load trades."); // New: Error notification
+    } else {
+      setTrades(data);
+      toast.success("Trades loaded successfully."); // New: Success notification
+    }
+    setLoading(false);
   }
 
   async function addTrade(e) {
@@ -68,6 +84,7 @@ function App() {
 
     if (error) {
       console.error(error);
+      toast.error("Failed to save trade."); // New: Error notification    
     } else {
       setForm({
         entry_date: "",
@@ -82,6 +99,7 @@ function App() {
         pnl: "",
         mf_profit: ""
       });
+      toast.success("Trade added/updated successfully."); // New: Success notification
       fetchTrades();
     }
   }
@@ -174,33 +192,48 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="container my-5">
-        {/* Navbar */}
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
-          <div className="container-fluid">
-            <span className="navbar-brand fw-bold">Trading Log</span>
-            <div className="navbar-nav ms-auto">
-              <Link to="/" className="nav-link">Journal</Link>
-              <Link to="/performance" className="nav-link">Performance</Link>
-            </div>
+    <div className="container my-5" style={{ fontFamily: 'Roboto, sans-serif' }}>
+      {/* Updated Navbar with Branding and Active Highlighting */}
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
+        <div className="container-fluid">
+          <span className="navbar-brand fw-bold" style={{ color: '#17a2b8' }}>📊 Trading Journal</span> {/* Branded logo/text */}
+          <div className="navbar-nav ms-auto">
+            <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Dashboard</Link>
+            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Journal</Link>
+            <Link to="/performance" className={`nav-link ${location.pathname === '/performance' ? 'active' : ''}`}>Performance</Link>
+            <Link to="/settings" className="nav-link">Settings</Link> {/* Placeholder for future */}
           </div>
-        </nav>
+        </div>
+      </nav>
 
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={
-            <JournalPage
-              trades={trades}
-              form={form}
-              handleChange={handleChange}
-              addTrade={addTrade}
-              startEdit={startEdit}
-            />
-          } />
-          <Route path="/performance" element={<PerformancePage trades={trades} />} />
-        </Routes>
-      </div>
+      {/* Loading Spinner */}
+      {loading && <div className="text-center"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>}
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/dashboard" element={<DashboardPage trades={trades} />} />
+        <Route path="/" element={
+          <JournalPage
+            trades={trades}
+            form={form}
+            handleChange={handleChange}
+            addTrade={addTrade}
+            startEdit={startEdit}
+          />
+        } />
+        <Route path="/performance" element={<PerformancePage trades={trades} />} />
+      </Routes>
+
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" autoClose={3000} />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
