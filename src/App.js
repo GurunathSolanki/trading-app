@@ -4,8 +4,7 @@ import JournalPage from "./JournalPage";
 import PerformancePage from "./PerformancePage";
 import DashboardPage from "./DashboardPage";
 import { supabase } from "./supabaseClient";
-import { ToastContainer, toast } from "react-toastify"; // New import for notifications
-import "react-toastify/dist/ReactToastify.css"; // New import for styles
+import { ToastContainer, toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
 import "./App.css";
 
@@ -197,61 +196,102 @@ function AppContent() {
   }
 
   return (
-    <div className="container my-5" style={{ fontFamily: 'Roboto, sans-serif' }}>
-      {/* Updated Navbar with Branding and Active Highlighting */}
+    <div className="min-h-screen bg-background font-sans">
+      {/* Modern Navbar */}
+      <nav className="bg-card border-b border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              {/* Brand */}
+              <div className="flex-shrink-0 flex items-center">
+                <div className="text-2xl font-bold text-primary">
+                  Trading Journal
+                </div>
+              </div>
+            </div>
 
+            {/* Navigation Links */}
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  }`
+                }
+              >
+                Journal
+              </NavLink>
+              <NavLink
+                to="/performance"
+                className={({ isActive }) =>
+                  `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  }`
+                }
+              >
+                Performance
+              </NavLink>
+            </div>
 
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
-        <div className="container-fluid">
-          {/* Brand */}
-          <span className="navbar-brand fw-bold" style={{ color: '#17a2b8' }}>
-            📊 Trading Journal
-          </span>
-
-          {/* Hamburger toggle for mobile */}
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          {/* Collapsible nav links */}
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <div className="navbar-nav ms-auto">
-              <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
-              <NavLink to="/" className="nav-link">Journal</NavLink>
-              <NavLink to="/performance" className="nav-link">Performance</NavLink>
-              <NavLink to="/settings" className="nav-link">Settings</NavLink>
+            {/* Mobile menu button */}
+            <div className="sm:hidden">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+                aria-controls="mobile-menu"
+                aria-expanded="false"
+              >
+                <span className="sr-only">Open main menu</span>
+                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-
       {/* Loading Spinner */}
-      {loading && <div className="text-center"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>}
+      {loading && (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )}
 
       {/* Routes */}
-      <Routes>
-        <Route path="/dashboard" element={<DashboardPage trades={trades} />} />
-        <Route path="/" element={
-          <JournalPage
-            trades={trades}
-            form={form}
-            handleChange={handleChange}
-            addTrade={addTrade}
-            startEdit={startEdit}
-            submitting={submitting}
-          />
-        } />
-        <Route path="/performance" element={<PerformancePage trades={trades} />} />
-      </Routes>
+      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <Routes>
+          <Route path="/dashboard" element={<DashboardPage trades={trades} />} />
+          <Route path="/" element={
+            <JournalPage
+              trades={trades}
+              form={form}
+              handleChange={handleChange}
+              addTrade={addTrade}
+              startEdit={startEdit}
+              submitting={submitting}
+            />
+          } />
+          <Route path="/performance" element={<PerformancePage trades={trades} />} />
+        </Routes>
+      </main>
 
       {/* Toast Notifications */}
       <ToastContainer position="top-right" autoClose={3000} />

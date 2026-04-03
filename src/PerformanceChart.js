@@ -1,5 +1,8 @@
 import { Line } from 'react-chartjs-2';
 import { useState } from 'react';
+import { BarChart3 } from 'lucide-react';
+import { Button } from './components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -57,7 +60,7 @@ export default function PerformanceChart({ trades }) {
     ],
   };
 
-  // Move options inside to access showAbsolute 
+  // Move options inside to access showAbsolute
   const options = {
     responsive: true,
     plugins: {
@@ -83,36 +86,53 @@ export default function PerformanceChart({ trades }) {
     }
   };
 
+  const avgOptionsPercent = trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.percent || 0), 0) / trades.length).toFixed(2) : 0;
+  const avgMFPercent = trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.mf_profit || 0), 0) / trades.length).toFixed(2) : 0;
+
   return (
-    <div>
+    <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="row g-3 mb-4">
-        <div className="col-md-6">
-          <div className="card text-center bg-light">
-            <div className="card-body">
-              <h5 className="card-title text-teal">Avg Options %</h5>
-              <p className="card-text fs-4">{trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.percent || 0), 0) / trades.length).toFixed(2) : 0}%</p>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="card text-center bg-light">
-            <div className="card-body">
-              <h5 className="card-title text-crimson">Avg MF %</h5>
-              <p className="card-text fs-4">{trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.mf_profit || 0), 0) / trades.length).toFixed(2) : 0}%</p>
-            </div>
-          </div>
-        </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg Options %</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{avgOptionsPercent}%</div>
+            <p className="text-xs text-muted-foreground">
+              Annualized return on options trading
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg MF %</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{avgMFPercent}%</div>
+            <p className="text-xs text-muted-foreground">
+              Annualized return on mutual funds
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Toggle Button */}
-      <div className="mb-3 text-center">
-        <button className="btn btn-outline-primary" onClick={() => setShowAbsolute(!showAbsolute)}>
+      <div className="flex justify-center">
+        <Button variant="outline" onClick={() => setShowAbsolute(!showAbsolute)}>
           Toggle to {showAbsolute ? 'Percentage' : 'Absolute Values'}
-        </button>
+        </Button>
       </div>
 
-      <Line data={data} options={options} />
+      {/* Chart */}
+      <Card>
+        <CardContent className="pt-6">
+          <Line data={data} options={options} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
