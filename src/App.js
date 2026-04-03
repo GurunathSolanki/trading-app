@@ -6,7 +6,7 @@ import DashboardPage from "./DashboardPage";
 import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
-import { calculateRequiredProfit, getCompleteTrades } from "./lib/tradingUtils";
+import { getCompleteTrades } from "./lib/tradingUtils";
 import "./App.css";
 
 
@@ -49,7 +49,23 @@ function AppContent() {
   async function fetchTrades() {
     setLoading(true);
     console.log("Fetching trades from Supabase...");
-    const { data, error } = await supabase.from("trading").select("*");
+
+    if (!supabase || typeof supabase.from !== "function") {
+      console.warn("Supabase client is unavailable or mocked incorrectly.");
+      setTrades([]);
+      setLoading(false);
+      return;
+    }
+
+    const fromQuery = supabase.from("trading");
+    if (!fromQuery || typeof fromQuery.select !== "function") {
+      console.warn("Supabase query chain is unavailable or mocked incorrectly.");
+      setTrades([]);
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await fromQuery.select("*");
     if (error) {
       console.error(error);
       toast.error("Failed to load trades."); // New: Error notification

@@ -1,12 +1,8 @@
 // Mock all external dependencies at the top level
-jest.mock('react-router-dom', () => ({
-  BrowserRouter: ({ children }) => <div data-testid="browser-router">{children}</div>,
-  Routes: ({ children }) => <div data-testid="routes">{children}</div>,
-  Route: ({ element }) => <div data-testid="route">{element}</div>,
-  NavLink: ({ children, to }) => <a href={to} data-testid="nav-link">{children}</a>
-}));
+jest.mock('react-router-dom');
 
 jest.mock('./supabaseClient', () => ({
+  __esModule: true,
   supabase: {
     from: jest.fn(() => ({
       select: jest.fn(() => Promise.resolve({ data: [], error: null }))
@@ -40,6 +36,7 @@ jest.mock('./PerformancePage', () => {
   };
 });
 
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
@@ -47,5 +44,7 @@ test('renders trading journal app', () => {
   render(<App />);
 
   expect(screen.getByText('Trading Journal')).toBeInTheDocument();
-  expect(screen.getByTestId('browser-router')).toBeInTheDocument();
+  expect(screen.getAllByText('Dashboard').length).toBeGreaterThanOrEqual(1);
+  expect(screen.getAllByText('Journal').length).toBeGreaterThanOrEqual(1);
+  expect(screen.getAllByText('Performance').length).toBeGreaterThanOrEqual(1);
 });
