@@ -31,6 +31,32 @@ function AppContent() {
   const [editingId, setEditingId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Helper function to filter only complete trades for calculations
+  const getCompleteTrades = (tradesArray) => {
+    return tradesArray.filter(trade => {
+      // A trade is complete if it has ALL data populated:
+      // - Trade dates (entry_date, exit_date)
+      // - Options data (options_trading_amount, interest, actual_profit)
+      // - MF data (mf_trading_amount, pnl)
+      // All values should be non-null and non-empty strings
+      const hasTradeDates = trade.entry_date && trade.exit_date;
+      
+      const hasOptionsData = trade.options_trading_amount !== null && 
+                            trade.options_trading_amount !== "" && 
+                            trade.interest !== null && 
+                            trade.interest !== "" && 
+                            trade.actual_profit !== null && 
+                            trade.actual_profit !== "";
+      
+      const hasMFData = trade.mf_trading_amount !== null && 
+                       trade.mf_trading_amount !== "" && 
+                       trade.pnl !== null && 
+                       trade.pnl !== "";
+      
+      return hasTradeDates && hasOptionsData && hasMFData;
+    });
+  };
+
   useEffect(() => {
     if (fetchOnceRef.current) return;
     fetchOnceRef.current = true;
@@ -325,7 +351,7 @@ function AppContent() {
       {/* Routes */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <Routes>
-          <Route path="/dashboard" element={<DashboardPage trades={trades} />} />
+          <Route path="/dashboard" element={<DashboardPage trades={getCompleteTrades(trades)} />} />
           <Route path="/" element={
             <JournalPage
               trades={trades}
@@ -337,7 +363,7 @@ function AppContent() {
               editingId={editingId}
             />
           } />
-          <Route path="/performance" element={<PerformancePage trades={trades} />} />
+          <Route path="/performance" element={<PerformancePage trades={getCompleteTrades(trades)} />} />
         </Routes>
       </main>
 
