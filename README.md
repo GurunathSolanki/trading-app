@@ -39,6 +39,33 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+## Testing
+
+This project uses Jest + React Testing Library. Additional helpers and module mocks were added to stabilize tests for routing and Supabase integration.
+
+- `src/__mocks__/react-router-dom.js`
+  - Mocks `BrowserRouter`, `Routes`, `Route`, `NavLink`, `Outlet` and `useLocation`.
+- `src/__mocks__/supabaseClient.js`
+  - Provides a chainable stub for `supabase.from(...).select(...).order(...)` to avoid async network dependency in unit tests.
+- `src/__mocks__/react-toastify.js`
+  - Stubs `toast` to prevent toast UI injection in tests.
+
+### Run tests
+
+- `npm test` (watch mode)
+- `npm test -- --watchAll=false --runInBand` (CI-friendly single-run)
+
+### How to extend coverage
+
+1. Add a new `*.test.js` file near the component / util under `src/`.
+2. Use `screen` queries:
+   - `getByText`, `getByRole`, `getByTestId` for deterministic assertions.
+   - Prefer `findBy*` for async effects and `await`.
+3. For components that use `supabase`, either:
+   - extend `src/__mocks__/supabaseClient.js` with mocked behavior, or
+   - pass a mock client object via props (future refactor).
+4. For routed UI, import `App` and use existing mocked `react-router-dom` behavior.
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
