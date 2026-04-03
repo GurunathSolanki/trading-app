@@ -15,7 +15,10 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
 
     useEffect(() => {
         if (editingId && firstFieldRef.current) {
-            firstFieldRef.current.focus();
+            const isMobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (!isMobile) {
+                firstFieldRef.current.focus();
+            }
             firstFieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }, [editingId]);
