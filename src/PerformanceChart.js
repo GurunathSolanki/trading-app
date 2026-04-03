@@ -1,6 +1,6 @@
 import { Line } from 'react-chartjs-2';
 import { useState } from 'react';
-import { BarChart3 } from 'lucide-react';
+import { ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import {
@@ -18,6 +18,11 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 export default function PerformanceChart({ trades }) {
   const [showAbsolute, setShowAbsolute] = useState(false); // New state for toggle
+
+  const getPLColor = (amount) => amount >= 0 ? 'text-green-600' : 'text-red-600';
+  const getPLIcon = (amount) => amount >= 0 ?
+    <ArrowUpIcon className="h-4 w-4 text-green-600" /> :
+    <ArrowDownIcon className="h-4 w-4 text-red-600" />;
 
   // Calculate cumulative data
   let cumulativeOptions = 0;
@@ -96,10 +101,10 @@ export default function PerformanceChart({ trades }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Options %</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            {getPLIcon(avgOptionsPercent)}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{avgOptionsPercent}%</div>
+            <div className={`text-2xl font-bold ${getPLColor(avgOptionsPercent)}`}>{avgOptionsPercent}%</div>
             <p className="text-xs text-muted-foreground">
               Annualized return on options trading
             </p>
@@ -109,10 +114,10 @@ export default function PerformanceChart({ trades }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg MF %</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            {getPLIcon(avgMFPercent)}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{avgMFPercent}%</div>
+            <div className={`text-2xl font-bold ${getPLColor(avgMFPercent)}`}>{avgMFPercent}%</div>
             <p className="text-xs text-muted-foreground">
               Annualized return on mutual funds
             </p>
