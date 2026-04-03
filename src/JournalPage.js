@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 
-export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit }) {
+export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, submitting = false }) {
     const [sortField, setSortField] = useState('exit_date');
     const [sortOrder, setSortOrder] = useState('asc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
@@ -40,6 +40,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.entry_date || ""}
                                         onChange={(e) => handleChange("entry_date", e.target.value)}
                                         aria-label="Entry date"
+                                        disabled={submitting}
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -50,6 +51,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.exit_date || ""}
                                         onChange={(e) => handleChange("exit_date", e.target.value)}
                                         aria-label="Exit date"
+                                        disabled={submitting}
                                     />
                                     {!isFormValid && form.exit_date && <small className="text-danger">Exit date must be after entry date.</small>}
                                 </div>
@@ -69,6 +71,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.options_trading_amount}
                                         onChange={(e) => handleChange("options_trading_amount", e.target.value)}
                                         aria-label="Options trading amount"
+                                        disabled={submitting}
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -84,6 +87,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.interest || ""}
                                         onChange={(e) => handleChange("interest", e.target.value)}
                                         aria-label="Interest"
+                                        disabled={submitting}
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -95,6 +99,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.actual_profit || ""}
                                         onChange={(e) => handleChange("actual_profit", e.target.value)}
                                         aria-label="Actual profit"
+                                        disabled={submitting}
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -121,6 +126,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.mf_trading_amount || ""}
                                         onChange={(e) => handleChange("mf_trading_amount", e.target.value)}
                                         aria-label="MF trading amount"
+                                        disabled={submitting}
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -132,6 +138,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         value={form.pnl || ""}
                                         onChange={(e) => handleChange("pnl", e.target.value)}
                                         aria-label="PnL"
+                                        disabled={submitting}
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -142,7 +149,16 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                         </fieldset>
 
                         <div className="col-12">
-                            <button type="submit" className="btn btn-primary w-100" disabled={!isFormValid}>Add Trade</button>
+                            <button type="submit" className="btn btn-primary w-100" disabled={!isFormValid || submitting}>
+                                {submitting ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Adding Trade...
+                                    </>
+                                ) : (
+                                    'Add Trade'
+                                )}
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -218,7 +234,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                             </span>
                                         </td>
                                         <td>
-                                            <button className="btn btn-warning btn-sm" onClick={() => startEdit(t)}>Edit</button>
+                                            <button className="btn btn-warning btn-sm" onClick={() => startEdit(t)} disabled={submitting}>Edit</button>
                                         </td>
                                     </tr>
                                 ))}

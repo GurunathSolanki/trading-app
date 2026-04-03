@@ -14,6 +14,7 @@ function AppContent() {
   const fetchOnceRef = useRef(false);
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true); // New state for loading
+  const [submitting, setSubmitting] = useState(false); // New state for form submission
   const [form, setForm] = useState({
     entry_date: "",
     exit_date: "",
@@ -52,6 +53,7 @@ function AppContent() {
 
   async function addTrade(e) {
     e.preventDefault();
+    setSubmitting(true);
 
     let cleanedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [
@@ -104,6 +106,7 @@ function AppContent() {
       toast.success("Trade added/updated successfully."); // New: Success notification
       fetchTrades();
     }
+    setSubmitting(false);
   }
 
   function startEdit(trade) {
@@ -244,6 +247,7 @@ function AppContent() {
             handleChange={handleChange}
             addTrade={addTrade}
             startEdit={startEdit}
+            submitting={submitting}
           />
         } />
         <Route path="/performance" element={<PerformancePage trades={trades} />} />
