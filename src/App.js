@@ -29,6 +29,7 @@ function AppContent() {
   });
 
   const [editingId, setEditingId] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (fetchOnceRef.current) return;
@@ -256,7 +257,8 @@ function AppContent() {
                 type="button"
                 className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                 aria-controls="mobile-menu"
-                aria-expanded="false"
+                aria-expanded={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 <span className="sr-only">Open main menu</span>
                 <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -267,6 +269,51 @@ function AppContent() {
           </div>
         </div>
       </nav>
+
+      {/* Mobile menu */}
+      <div className={`${mobileMenuOpen ? 'block' : 'hidden'} sm:hidden`} id="mobile-menu">
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-card border-b border-border shadow-sm">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Dashboard
+          </NavLink>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Journal
+          </NavLink>
+          <NavLink
+            to="/performance"
+            className={({ isActive }) =>
+              `block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Performance
+          </NavLink>
+        </div>
+      </div>
 
       {/* Loading Spinner */}
       {loading && (
