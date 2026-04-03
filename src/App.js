@@ -14,7 +14,8 @@ function AppContent() {
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true); // New state for loading
   const [submitting, setSubmitting] = useState(false); // New state for form submission
-  const [form, setForm] = useState({
+
+  const initialForm = {
     entry_date: "",
     exit_date: "",
     options_trading_amount: "",
@@ -26,7 +27,9 @@ function AppContent() {
     mf_trading_amount: "",
     pnl: "",
     mf_profit: ""
-  });
+  };
+
+  const [form, setForm] = useState(initialForm);
 
   const [editingId, setEditingId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -88,6 +91,25 @@ function AppContent() {
       ])
     );
 
+    const numericFields = [
+      "options_trading_amount",
+      "required_profit",
+      "interest",
+      "actual_profit",
+      "total_profit",
+      "percent",
+      "mf_trading_amount",
+      "pnl",
+      "mf_profit"
+    ];
+
+    numericFields.forEach((field) => {
+      if (cleanedForm[field] !== null && cleanedForm[field] !== undefined) {
+        const parsed = Number(cleanedForm[field]);
+        cleanedForm[field] = Number.isNaN(parsed) ? null : parsed;
+      }
+    });
+
     // Auto-calc required_profit if possible
     if (cleanedForm.entry_date && cleanedForm.exit_date && cleanedForm.options_trading_amount) {
       cleanedForm.required_profit = calculateRequiredProfit(
@@ -98,41 +120,50 @@ function AppContent() {
     }
 
     let error;
-    if (editingId) {
-      const { error: updateError } = await supabase
-        .from("trading")
-        .update(cleanedForm)
-        .eq("id", editingId);
-      error = updateError;
-      setEditingId(null);
-    } else {
-      const { error: insertError } = await supabase
-        .from("trading")
-        .insert([cleanedForm]);
-      error = insertError;
-    }
+    const operation = editingId ? "update" : "insert";
 
-    if (error) {
-      console.error(error);
-      toast.error("Failed to save trade."); // New: Error notification    
-    } else {
-      setForm({
-        entry_date: "",
-        exit_date: "",
-        options_trading_amount: "",
-        required_profit: "",
-        interest: "",
-        actual_profit: "",
-        total_profit: "",
-        percent: "",
-        mf_trading_amount: "",
-        pnl: "",
-        mf_profit: ""
+    try {
+      if (editingId) {
+        const { error: updateError } = await supabase
+          .from("trading")
+          .update(cleanedForm)
+          .eq("id", editingId);
+        error = updateError;
+        if (!error) {
+          setEditingId(null);
+        }
+      } else {
+        const { error: insertError } = await supabase
+          .from("trading")
+          .insert([cleanedForm]);
+        error = insertError;
+      }
+
+      if (error) {
+        console.error("Supabase trade save failed", {
+          operation,
+          editingId,
+          payload: cleanedForm,
+          error
+        });
+        toast.error(`Failed to save trade: ${error.message || "unknown error"}`);
+      } else {
+        setForm(initialForm);
+        toast.success(editingId ? "Trade updated successfully." : "Trade added successfully.");
+        setEditingId(null);
+        fetchTrades();
+      }
+    } catch (unexpectedError) {
+      console.error("Unexpected error while saving trade", {
+        operation,
+        editingId,
+        payload: cleanedForm,
+        unexpectedError
       });
-      toast.success("Trade added/updated successfully."); // New: Success notification
-      fetchTrades();
+      toast.error("Unexpected error while saving trade. Check console for details.");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   function startEdit(trade) {
@@ -150,6 +181,11 @@ function AppContent() {
       pnl: trade.pnl || "",
       mf_profit: trade.mf_profit || ""
     });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setForm(initialForm);
   }
 
   function handleChange(field, value) {
@@ -359,6 +395,7 @@ function AppContent() {
               handleChange={handleChange}
               addTrade={addTrade}
               startEdit={startEdit}
+              cancelEdit={cancelEdit}
               submitting={submitting}
               editingId={editingId}
             />

@@ -6,7 +6,7 @@ import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 
-export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, submitting = false, editingId }) {
+export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId }) {
     const [sortField, setSortField] = useState('exit_date');
     const [sortOrder, setSortOrder] = useState('asc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
@@ -43,7 +43,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
             {/* Trading Form */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Add New Trade</CardTitle>
+                    <CardTitle>{editingId ? "Edit Trade" : "Add New Trade"}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={addTrade} className="space-y-6">
@@ -187,16 +187,23 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                             </div>
                         </fieldset>
 
-                        <Button type="submit" className="w-full" disabled={!isFormValid || submitting}>
-                            {submitting ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                                    Adding Trade...
-                                </>
-                            ) : (
-                                'Add Trade'
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <Button type="submit" className="sm:col-span-2" disabled={!isFormValid || submitting}>
+                                {submitting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                        {editingId ? 'Updating Trade...' : 'Adding Trade...'}
+                                    </>
+                                ) : (
+                                    editingId ? 'Update Trade' : 'Add Trade'
+                                )}
+                            </Button>
+                            {editingId && (
+                                <Button type="button" variant="secondary" onClick={() => cancelEdit && cancelEdit()} disabled={submitting}>
+                                    Cancel
+                                </Button>
                             )}
-                        </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>
