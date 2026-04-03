@@ -130,7 +130,18 @@ export default function PerformanceChart({ trades }) {
       {/* Chart */}
       <Card>
         <CardContent className="pt-6">
-          <Line data={data} options={options} />
+          <div className="min-h-[300px] sm:min-h-[400px] md:min-h-[500px] w-full">
+            <Line 
+              data={data} 
+              options={{
+                ...options,
+                maintainAspectRatio: false,
+                responsive: true,
+              }}
+              height={null}
+              width={null}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
