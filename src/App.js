@@ -287,6 +287,7 @@ function AppContent() {
               addTrade={addTrade}
               startEdit={startEdit}
               submitting={submitting}
+              editingId={editingId}
             />
           } />
           <Route path="/performance" element={<PerformancePage trades={trades} />} />

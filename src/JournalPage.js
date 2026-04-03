@@ -1,15 +1,24 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Edit, ArrowUpDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 
-export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, submitting = false }) {
+export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, submitting = false, editingId }) {
     const [sortField, setSortField] = useState('exit_date');
     const [sortOrder, setSortOrder] = useState('asc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
+
+    const firstFieldRef = useRef(null);
+
+    useEffect(() => {
+        if (editingId && firstFieldRef.current) {
+            firstFieldRef.current.focus();
+            firstFieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [editingId]);
 
     // Sorting and filtering logic
     const sortedTrades = [...trades].sort((a, b) => {
@@ -42,6 +51,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                 <div className="space-y-2">
                                     <Label htmlFor="entry-date">Entry Date</Label>
                                     <Input
+                                        ref={firstFieldRef}
                                         id="entry-date"
                                         type="date"
                                         value={form.entry_date || ""}
