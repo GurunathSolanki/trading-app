@@ -3,6 +3,7 @@ import { Calculator, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
+import { formatIndianNumber } from "./lib/utils";
 
 export default function MarginCalculatorPage() {
   const [inputs, setInputs] = useState({
@@ -119,7 +120,7 @@ export default function MarginCalculatorPage() {
                 <div className="p-4 bg-muted rounded-lg">
                   <h3 className="font-semibold text-lg mb-2">Order Distribution</h3>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Total Lots: {results.totalLots}
+                    Total Lots: {formatIndianNumber(results.totalLots)}
                   </p>
                   <div className="space-y-1">
                     {Array.from({ length: results.fullOrders }, (_, i) => (
@@ -129,7 +130,7 @@ export default function MarginCalculatorPage() {
                     ))}
                     {results.remainingQty > 0 && (
                       <p className="text-sm">
-                        Order {results.fullOrders + 1}: {Math.round(results.remainingQty / 65)} lots ({results.remainingQty} qty)
+                        Order {results.fullOrders + 1}: {Math.round(results.remainingQty / 65)} lots ({formatIndianNumber(results.remainingQty)} qty)
                       </p>
                     )}
                   </div>
@@ -138,10 +139,10 @@ export default function MarginCalculatorPage() {
                 <div className="p-4 bg-primary/10 rounded-lg">
                   <h3 className="font-semibold text-lg mb-2">Total Profit</h3>
                   <p className="text-2xl font-bold text-primary">
-                    ₹{results.totalProfit}
+                    ₹{formatIndianNumber(results.totalProfit)}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Based on {results.totalLots} lots × 65 × {inputs.totalPoints} points
+                    Based on {formatIndianNumber(results.totalLots)} lots × 65 × {formatIndianNumber(inputs.totalPoints)} points
                   </p>
                 </div>
               </div>

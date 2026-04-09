@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
+import { formatIndianNumber } from "./lib/utils";
 
 export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId }) {
     const [sortField, setSortField] = useState('exit_date');
@@ -266,17 +267,17 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                     <tr key={t.id} className="border-b hover:bg-muted/50 transition-colors duration-150">
                                         <td className="p-2">{t.entry_date}</td>
                                         <td className="p-2">{t.exit_date}</td>
-                                        <td className="p-2">{t.options_trading_amount}</td>
-                                        <td className="p-2">{t.required_profit}</td>
-                                        <td className="p-2">{t.interest}</td>
-                                        <td className="p-2">{t.actual_profit}</td>
+                                        <td className="p-2">{formatIndianNumber(t.options_trading_amount)}</td>
+                                        <td className="p-2">{formatIndianNumber(t.required_profit)}</td>
+                                        <td className="p-2">{formatIndianNumber(t.interest)}</td>
+                                        <td className="p-2">{formatIndianNumber(t.actual_profit)}</td>
                                         <td className="p-2">
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                 parseFloat(t.total_profit) >= 0
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
                                             }`}>
-                                                {t.total_profit}
+                                                {formatIndianNumber(t.total_profit)}
                                             </span>
                                         </td>
                                         <td className="p-2">
@@ -288,14 +289,14 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                                 {t.percent}%
                                             </span>
                                         </td>
-                                        <td className="p-2">{t.mf_trading_amount}</td>
+                                        <td className="p-2">{formatIndianNumber(t.mf_trading_amount)}</td>
                                         <td className="p-2">
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                 t.pnl >= 0
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
                                             }`}>
-                                                {t.pnl}
+                                                {formatIndianNumber(t.pnl)}
                                             </span>
                                         </td>
                                         <td className="p-2">

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from "./components/ui/button";
+import { formatIndianNumber } from "./lib/utils";
 
 export default function DashboardPage({ trades = [] }) {
   const [timePeriod, setTimePeriod] = useState('all');
@@ -77,11 +78,8 @@ export default function DashboardPage({ trades = [] }) {
   const worstTrade = totalTrades > 0 ? Math.min(...filteredTrades.map(t => parseFloat(t.total_profit || 0))) : 0;
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-    }).format(amount);
+    const formatted = formatIndianNumber(amount);
+    return `₹${formatted}`;
   };
 
   const getPLColor = (amount) => amount >= 0 ? 'text-green-600' : 'text-red-600';
