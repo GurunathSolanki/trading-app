@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import JournalPage from "./JournalPage";
 import PerformancePage from "./PerformancePage";
 import DashboardPage from "./DashboardPage";
+import MarginCalculatorPage from "./MarginCalculatorPage";
 import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
@@ -307,6 +308,18 @@ function AppContent() {
               >
                 Performance
               </NavLink>
+              <NavLink
+                to="/margin-calculator"
+                className={({ isActive }) =>
+                  `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  }`
+                }
+              >
+                Margin Calculator
+              </NavLink>
             </div>
 
             {/* Mobile menu button */}
@@ -370,6 +383,19 @@ function AppContent() {
           >
             Performance
           </NavLink>
+          <NavLink
+            to="/margin-calculator"
+            className={({ isActive }) =>
+              `block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Margin Calculator
+          </NavLink>
         </div>
       </div>
 
@@ -397,6 +423,7 @@ function AppContent() {
             />
           } />
           <Route path="/performance" element={<PerformancePage trades={getCompleteTradesFiltered(trades)} />} />
+          <Route path="/margin-calculator" element={<MarginCalculatorPage />} />
         </Routes>
       </main>
 
