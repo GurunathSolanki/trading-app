@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calculator, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
-import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 
@@ -21,13 +20,13 @@ export default function MarginCalculatorPage() {
     }));
   };
 
-  const calculate = () => {
+  useEffect(() => {
     const marginForOneOrder = parseFloat(inputs.marginForOneOrder);
     const totalMarginAvailable = parseFloat(inputs.totalMarginAvailable);
     const totalPoints = parseFloat(inputs.totalPoints);
 
     if (!marginForOneOrder || !totalMarginAvailable || !totalPoints) {
-      alert('Please fill in all fields');
+      setResults(null);
       return;
     }
 
@@ -52,16 +51,7 @@ export default function MarginCalculatorPage() {
       remainingQty,
       totalProfit: totalProfit.toFixed(2)
     });
-  };
-
-  const reset = () => {
-    setInputs({
-      marginForOneOrder: '',
-      totalMarginAvailable: '',
-      totalPoints: ''
-    });
-    setResults(null);
-  };
+  }, [inputs]);
 
   return (
     <div className="space-y-6">
@@ -112,15 +102,6 @@ export default function MarginCalculatorPage() {
                 onChange={(e) => handleInputChange('totalPoints', e.target.value)}
               />
             </div>
-
-            <div className="flex space-x-2">
-              <Button onClick={calculate} className="flex-1">
-                Calculate
-              </Button>
-              <Button onClick={reset} variant="outline">
-                Reset
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
@@ -167,7 +148,7 @@ export default function MarginCalculatorPage() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Enter parameters and click Calculate to see results</p>
+                <p>Enter all parameters to see calculations</p>
               </div>
             )}
           </CardContent>
