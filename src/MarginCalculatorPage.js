@@ -17,6 +17,8 @@ export default function MarginCalculatorPage() {
     totalMarginAvailable: ''
   });
 
+  const [results, setResults] = useState(null);
+
   const handleInputChange = (field, value) => {
     if (field === 'totalPoints') {
       setInputs(prev => ({
