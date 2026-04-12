@@ -143,7 +143,17 @@ function AppContent() {
           payload: cleanedForm,
           error
         });
-        toast.error(`Failed to save trade: ${error.message || "unknown error"}`);
+        let errorMessage = "Failed to save trade.";
+        if (error.message) {
+          if (error.message.toLowerCase().includes("network") || error.message.toLowerCase().includes("fetch")) {
+            errorMessage = "Network error. Please check your internet connection and try again.";
+          } else if (error.message.toLowerCase().includes("auth")) {
+            errorMessage = "Authentication error. Please log in again.";
+          } else {
+            errorMessage = `Failed to save trade: ${error.message}`;
+          }
+        }
+        toast.error(errorMessage);
       } else {
         setForm(initialForm);
         toast.success(editingId ? "Trade updated successfully." : "Trade added successfully.");

@@ -37,7 +37,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
     });
 
     // Validation
-    const isFormValid = form.entry_date && form.exit_date && new Date(form.exit_date) >= new Date(form.entry_date);
+    const isFormValid = form.entry_date;
 
     return (
         <div className="space-y-6 animate-in fade-in-0 duration-500">
@@ -72,7 +72,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         onChange={(e) => handleChange("exit_date", e.target.value)}
                                         disabled={submitting}
                                     />
-                                    {!isFormValid && form.exit_date && (
+                                    {form.entry_date && form.exit_date && new Date(form.exit_date) < new Date(form.entry_date) && (
                                         <p className="text-sm text-destructive">Exit date must be after entry date.</p>
                                     )}
                                 </div>
