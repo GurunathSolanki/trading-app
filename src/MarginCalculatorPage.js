@@ -12,13 +12,34 @@ export default function MarginCalculatorPage() {
     totalPoints: ''
   });
 
-  const [results, setResults] = useState(null);
+  const [displayValues, setDisplayValues] = useState({
+    marginForOneOrder: '',
+    totalMarginAvailable: ''
+  });
 
   const handleInputChange = (field, value) => {
-    setInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    if (field === 'totalPoints') {
+      setInputs(prev => ({
+        ...prev,
+        [field]: value
+      }));
+      return;
+    }
+
+    // For margin fields, handle Indian number formatting
+    const rawValue = value.replace(/,/g, ''); // remove existing commas
+    if (rawValue === '' || /^\d*\.?\d*$/.test(rawValue)) { // allow numbers and optional decimal
+      const numValue = rawValue === '' ? '' : parseFloat(rawValue);
+      setInputs(prev => ({
+        ...prev,
+        [field]: numValue
+      }));
+      const formatted = rawValue === '' ? '' : formatIndianNumber(numValue);
+      setDisplayValues(prev => ({
+        ...prev,
+        [field]: formatted
+      }));
+    }
   };
 
   useEffect(() => {
@@ -75,9 +96,9 @@ export default function MarginCalculatorPage() {
               <Label htmlFor="marginForOneOrder">Margin for One Order</Label>
               <Input
                 id="marginForOneOrder"
-                type="number"
-                placeholder="e.g. 3502000"
-                value={inputs.marginForOneOrder}
+                type="text"
+                placeholder="e.g. 35,02,000"
+                value={displayValues.marginForOneOrder}
                 onChange={(e) => handleInputChange('marginForOneOrder', e.target.value)}
               />
             </div>
@@ -86,9 +107,9 @@ export default function MarginCalculatorPage() {
               <Label htmlFor="totalMarginAvailable">Total Margin Available</Label>
               <Input
                 id="totalMarginAvailable"
-                type="number"
-                placeholder="e.g. 12036000"
-                value={inputs.totalMarginAvailable}
+                type="text"
+                placeholder="e.g. 1,20,36,000"
+                value={displayValues.totalMarginAvailable}
                 onChange={(e) => handleInputChange('totalMarginAvailable', e.target.value)}
               />
             </div>
