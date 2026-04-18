@@ -5,6 +5,47 @@ import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { formatIndianNumber } from "./lib/utils";
 
+// Configurable values - can be changed based on exchange requirements
+export const LOT_SIZE = 65; // Quantity per lot
+export const ORDER_SIZE = 1755; // Quantity per order (1755 / 65 = 27 lots)
+
+// Export calculation function for testing
+export function calculateMarginResults(marginForOneOrder, totalMarginAvailable, totalPoints) {
+  if (!marginForOneOrder || !totalMarginAvailable || !totalPoints) {
+    return null;
+  }
+
+  // Step 1: Calculate number of lots
+  // Formula: |ORDER_SIZE / marginForOneOrder * totalMarginAvailable| / LOT_SIZE
+  const rawLots = Math.abs(ORDER_SIZE / marginForOneOrder * totalMarginAvailable) / LOT_SIZE;
+  
+  // Round to whole number
+  const totalLots = Math.round(rawLots);
+
+  // Calculate lots per order (ORDER_SIZE / LOT_SIZE = 27)
+  const lotsPerOrder = ORDER_SIZE / LOT_SIZE;
+  const fullOrders = Math.floor(totalLots / lotsPerOrder);
+  
+  // Remainder: use fractional part of totalLots / lotsPerOrder
+  const fractionalPart = (totalLots / lotsPerOrder) - fullOrders;
+  const remainingLots = Math.round(fractionalPart * lotsPerOrder);
+  
+  // Calculate qty for remaining lots
+  const remainingQty = remainingLots * LOT_SIZE;
+
+  // Step 2: Calculate total profit using distributed lots
+  const distributedLots = (fullOrders * lotsPerOrder) + remainingLots;
+  const totalProfit = distributedLots * LOT_SIZE * totalPoints;
+
+  return {
+    totalLots,
+    fullOrders,
+    remainingLots,
+    remainingQty,
+    totalProfit: totalProfit.toFixed(2)
+  };
+}
+
 export default function MarginCalculatorPage() {
   const [inputs, setInputs] = useState({
     marginForOneOrder: '',
@@ -49,32 +90,8 @@ export default function MarginCalculatorPage() {
     const totalMarginAvailable = parseFloat(inputs.totalMarginAvailable);
     const totalPoints = parseFloat(inputs.totalPoints);
 
-    if (!marginForOneOrder || !totalMarginAvailable || !totalPoints) {
-      setResults(null);
-      return;
-    }
-
-    // Step 1: Calculate number of lots
-    // Formula: 1755 / marginForOneOrder * totalMarginAvailable / 65
-    const totalLots = Math.abs((1755 / marginForOneOrder) * totalMarginAvailable / 65);
-
-    // One order supports 27 lots
-    const lotsPerOrder = 27;
-    const fullOrders = Math.floor(totalLots / lotsPerOrder);
-    const remainingLots = totalLots % lotsPerOrder;
-
-    // Calculate qty for remaining lots (1 lot = 65 qty)
-    const remainingQty = Math.round(remainingLots * 65);
-
-    // Step 2: Calculate total profit
-    const totalProfit = totalLots * 65 * totalPoints;
-
-    setResults({
-      totalLots: Math.round(totalLots),
-      fullOrders,
-      remainingQty,
-      totalProfit: totalProfit.toFixed(2)
-    });
+    const results = calculateMarginResults(marginForOneOrder, totalMarginAvailable, totalPoints);
+    setResults(results);
   }, [inputs]);
 
   return (
@@ -148,12 +165,12 @@ export default function MarginCalculatorPage() {
                   <div className="space-y-1">
                     {Array.from({ length: results.fullOrders }, (_, i) => (
                       <p key={i} className="text-sm">
-                        Order {i + 1}: 27 lots (1755 qty)
+                        Order {i + 1}: {ORDER_SIZE / LOT_SIZE} lots ({ORDER_SIZE} qty)
                       </p>
                     ))}
-                    {results.remainingQty > 0 && (
+                    {results.remainingLots > 0 && (
                       <p className="text-sm">
-                        Order {results.fullOrders + 1}: {Math.round(results.remainingQty / 65)} lots ({formatIndianNumber(results.remainingQty)} qty)
+                        Order {results.fullOrders + 1}: {results.remainingLots} lots ({formatIndianNumber(results.remainingQty)} qty)
                       </p>
                     )}
                   </div>
@@ -165,7 +182,7 @@ export default function MarginCalculatorPage() {
                     ₹{formatIndianNumber(results.totalProfit)}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Based on {formatIndianNumber(results.totalLots)} lots × 65 × {formatIndianNumber(inputs.totalPoints)} points
+                    Based on {formatIndianNumber(results.totalLots)} lots × {LOT_SIZE} × {inputs.totalPoints} points
                   </p>
                 </div>
               </div>
