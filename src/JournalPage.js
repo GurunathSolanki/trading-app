@@ -246,20 +246,20 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                 <CardContent>
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
-                            <thead>
+                            <thead className="sticky-header">
                                 <tr className="border-b">
-                                    <th className="text-left p-2 font-medium">Entry Date</th>
-                                    <th className="text-left p-2 font-medium">Exit Date</th>
-                                    <th className="text-left p-2 font-medium">Options Amount</th>
-                                    <th className="text-left p-2 font-medium">Required Profit</th>
-                                    <th className="text-left p-2 font-medium">Interest</th>
-                                    <th className="text-left p-2 font-medium">Actual Profit</th>
-                                    <th className="text-left p-2 font-medium">Total Profit</th>
-                                    <th className="text-left p-2 font-medium">Percent</th>
-                                    <th className="text-left p-2 font-medium">MF Amount</th>
-                                    <th className="text-left p-2 font-medium">PnL</th>
-                                    <th className="text-left p-2 font-medium">MF Profit</th>
-                                    <th className="text-left p-2 font-medium">Actions</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Entry Date</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Exit Date</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Options Amount</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Required Profit</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Interest</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Actual Profit</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Total Profit</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Percent</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">MF Amount</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">PnL</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">MF Profit</th>
+                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
