@@ -8,8 +8,8 @@ import { Label } from "./components/ui/label";
 import { formatIndianNumber } from "./lib/utils";
 
 export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId }) {
-    const [sortField, setSortField] = useState('exit_date');
-    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortField, setSortField] = useState('entry_date');
+    const [sortOrder, setSortOrder] = useState('desc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
 
     const firstFieldRef = useRef(null);
