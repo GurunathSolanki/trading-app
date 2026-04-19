@@ -7,7 +7,7 @@ import MarginCalculatorPage from "./MarginCalculatorPage";
 import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
-import { getCompleteTrades } from "./lib/tradingUtils";
+import { getCompleteTrades, calculateAnnualizedPercent } from "./lib/tradingUtils";
 import "./App.css";
 
 
@@ -107,14 +107,33 @@ function AppContent() {
       }
     });
 
-    // Auto-calc required_profit if possible
-    if (cleanedForm.entry_date && cleanedForm.exit_date && cleanedForm.options_trading_amount) {
-      cleanedForm.required_profit = calculateRequiredProfit(
-        cleanedForm.entry_date,
-        cleanedForm.exit_date,
-        Number(cleanedForm.options_trading_amount)
-      );
-    }
+    // Default all optional numeric fields to zero so blank mobile inputs still save.
+    numericFields.forEach((field) => {
+      if (cleanedForm[field] === null || cleanedForm[field] === undefined || cleanedForm[field] === "") {
+        cleanedForm[field] = 0;
+      }
+    });
+
+    cleanedForm.total_profit = Number(cleanedForm.interest || 0) + Number(cleanedForm.actual_profit || 0);
+    cleanedForm.required_profit = cleanedForm.entry_date && cleanedForm.exit_date && Number(cleanedForm.options_trading_amount) > 0
+      ? calculateRequiredProfit(
+          cleanedForm.entry_date,
+          cleanedForm.exit_date,
+          Number(cleanedForm.options_trading_amount)
+        )
+      : 0;
+    cleanedForm.percent = Number(calculateAnnualizedPercent(
+      cleanedForm.total_profit,
+      cleanedForm.entry_date,
+      cleanedForm.exit_date,
+      Number(cleanedForm.options_trading_amount)
+    ));
+    cleanedForm.mf_profit = Number(calculateAnnualizedPercent(
+      Number(cleanedForm.pnl),
+      cleanedForm.entry_date,
+      cleanedForm.exit_date,
+      Number(cleanedForm.mf_trading_amount)
+    ));
 
     let error;
     const operation = editingId ? "update" : "insert";

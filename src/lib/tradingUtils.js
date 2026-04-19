@@ -56,18 +56,26 @@ export function getCompleteTrades(trades) {
     // All values should be non-null and non-empty strings
     const hasTradeDates = trade.entry_date && trade.exit_date;
 
-    const hasOptionsData = trade.options_trading_amount !== null &&
-                          trade.options_trading_amount !== "" &&
-                          trade.interest !== null &&
-                          trade.interest !== "" &&
-                          trade.actual_profit !== null &&
-                          trade.actual_profit !== "";
+    const numericValues = [
+      trade.options_trading_amount,
+      trade.required_profit,
+      trade.interest,
+      trade.actual_profit,
+      trade.total_profit,
+      trade.percent,
+      trade.mf_trading_amount,
+      trade.pnl,
+      trade.mf_profit
+    ];
 
-    const hasMFData = trade.mf_trading_amount !== null &&
-                     trade.mf_trading_amount !== "" &&
-                     trade.pnl !== null &&
-                     trade.pnl !== "";
+    const allFieldsPopulated = numericValues.every(
+      (value) => value !== null && value !== undefined && value !== ""
+    );
 
-    return hasTradeDates && hasOptionsData && hasMFData;
+    const allFieldsNonZero = numericValues.every(
+      (value) => Number(value) !== 0
+    );
+
+    return hasTradeDates && allFieldsPopulated && allFieldsNonZero;
   });
 }

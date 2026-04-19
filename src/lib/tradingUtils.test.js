@@ -63,30 +63,42 @@ describe('Trading Utilities', () => {
           entry_date: '2024-01-01',
           exit_date: '2024-01-02',
           options_trading_amount: 10000,
+          required_profit: 9,
           interest: 100,
           actual_profit: 200,
+          total_profit: 300,
+          percent: '547.50',
           mf_trading_amount: 5000,
-          pnl: 150
+          pnl: 150,
+          mf_profit: '1095.00'
         },
         {
           id: 2,
           entry_date: '2024-01-01',
           exit_date: '2024-01-02',
           options_trading_amount: null, // incomplete
+          required_profit: null,
           interest: 100,
           actual_profit: 200,
+          total_profit: 300,
+          percent: '547.50',
           mf_trading_amount: 5000,
-          pnl: 150
+          pnl: 150,
+          mf_profit: '1095.00'
         },
         {
           id: 3,
           entry_date: '2024-01-01',
           exit_date: '2024-01-02',
           options_trading_amount: 10000,
+          required_profit: 9,
           interest: 100,
           actual_profit: 200,
+          total_profit: 300,
+          percent: '547.50',
           mf_trading_amount: '', // incomplete
-          pnl: 150
+          pnl: 150,
+          mf_profit: '1095.00'
         }
       ];
 
