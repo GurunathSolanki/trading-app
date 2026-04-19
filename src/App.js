@@ -81,6 +81,7 @@ function AppContent() {
     e.preventDefault();
     setSubmitting(true);
 
+    // Convert empty strings to null first, then handle numeric conversion
     let cleanedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [
         key,
@@ -100,17 +101,15 @@ function AppContent() {
       "mf_profit"
     ];
 
-    numericFields.forEach((field) => {
-      if (cleanedForm[field] !== null && cleanedForm[field] !== undefined) {
-        const parsed = Number(cleanedForm[field]);
-        cleanedForm[field] = Number.isNaN(parsed) ? null : parsed;
-      }
-    });
-
-    // Default all optional numeric fields to zero so blank mobile inputs still save.
+    // Default all optional numeric fields to zero - handles blank mobile inputs
+    // This must happen BEFORE parsing to Number to avoid NaN issues
     numericFields.forEach((field) => {
       if (cleanedForm[field] === null || cleanedForm[field] === undefined || cleanedForm[field] === "") {
         cleanedForm[field] = 0;
+      } else {
+        // Parse to number, default to 0 if NaN
+        const parsed = Number(cleanedForm[field]);
+        cleanedForm[field] = Number.isNaN(parsed) ? 0 : parsed;
       }
     });
 
