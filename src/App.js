@@ -16,6 +16,7 @@ function AppContent() {
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true); // New state for loading
   const [submitting, setSubmitting] = useState(false); // New state for form submission
+  const [saveError, setSaveError] = useState("");
 
   const initialForm = {
     entry_date: "",
@@ -79,6 +80,7 @@ function AppContent() {
 
   async function addTrade(e) {
     e.preventDefault();
+    setSaveError("");
     setSubmitting(true);
 
     // Convert empty strings to null first, then handle numeric conversion
@@ -171,8 +173,13 @@ function AppContent() {
             errorMessage = `Failed to save trade: ${error.message}`;
           }
         }
+        const fullError = error && typeof error === 'object'
+          ? `${errorMessage}\n\n${JSON.stringify(error, null, 2)}`
+          : errorMessage;
+        setSaveError(fullError);
         toast.error(errorMessage);
       } else {
+        setSaveError("");
         setForm(initialForm);
         toast.success(editingId ? "Trade updated successfully." : "Trade added successfully.");
         setEditingId(null);
@@ -185,7 +192,14 @@ function AppContent() {
         payload: cleanedForm,
         unexpectedError
       });
-      toast.error("Unexpected error while saving trade. Check console for details.");
+      const unexpectedMessage = unexpectedError && unexpectedError.message
+        ? `Unexpected error while saving trade: ${unexpectedError.message}`
+        : "Unexpected error while saving trade.";
+      const fullUnexpected = unexpectedError && typeof unexpectedError === 'object'
+        ? `${unexpectedMessage}\n\n${JSON.stringify(unexpectedError, null, 2)}`
+        : unexpectedMessage;
+      setSaveError(fullUnexpected);
+      toast.error(unexpectedMessage);
     } finally {
       setSubmitting(false);
     }
@@ -448,6 +462,7 @@ function AppContent() {
               cancelEdit={cancelEdit}
               submitting={submitting}
               editingId={editingId}
+              saveError={saveError}
             />
           } />
           <Route path="/performance" element={<PerformancePage trades={getCompleteTradesFiltered(trades)} />} />

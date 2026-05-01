@@ -7,7 +7,7 @@ import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { formatIndianNumber } from "./lib/utils";
 
-export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId }) {
+export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId, saveError = "" }) {
     const [sortField, setSortField] = useState('entry_date');
     const [sortOrder, setSortOrder] = useState('desc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
@@ -39,6 +39,11 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
     // Validation
     const isFormValid = form.entry_date;
 
+    const copyErrorToClipboard = () => {
+        if (!saveError || !navigator.clipboard) return;
+        navigator.clipboard.writeText(saveError).catch(() => {});
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in-0 duration-500">
             {/* Trading Form */}
@@ -48,6 +53,26 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={addTrade} className="space-y-6">
+                        {saveError && (
+                            <div className="rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive space-y-2">
+                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                                    <div className="font-semibold">Save error</div>
+                                    <button
+                                        type="button"
+                                        onClick={copyErrorToClipboard}
+                                        className="text-xs underline underline-offset-2"
+                                    >
+                                        Copy error
+                                    </button>
+                                </div>
+                                <textarea
+                                    readOnly
+                                    value={saveError}
+                                    className="w-full min-h-[96px] rounded-md border border-destructive/50 bg-background p-2 text-xs font-mono text-foreground resize-y"
+                                />
+                                <div className="text-xs text-muted-foreground">Long press or tap copy to copy the full error details.</div>
+                            </div>
+                        )}
                         {/* Dates Group */}
                         <fieldset className="space-y-4">
                             <legend className="text-lg font-semibold">Trade Dates</legend>
