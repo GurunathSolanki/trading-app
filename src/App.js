@@ -463,6 +463,7 @@ function AppContent() {
               submitting={submitting}
               editingId={editingId}
               saveError={saveError}
+              setSaveError={setSaveError}
             />
           } />
           <Route path="/performance" element={<PerformancePage trades={getCompleteTradesFiltered(trades)} />} />

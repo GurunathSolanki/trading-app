@@ -7,7 +7,7 @@ import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { formatIndianNumber } from "./lib/utils";
 
-export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId, saveError = "" }) {
+export default function JournalPage({ trades = [], form = {}, handleChange, addTrade, startEdit, cancelEdit, submitting = false, editingId, saveError = "", setSaveError }) {
     const [sortField, setSortField] = useState('entry_date');
     const [sortOrder, setSortOrder] = useState('desc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
