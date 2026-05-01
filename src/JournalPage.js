@@ -56,21 +56,30 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                         {saveError && (
                             <div className="rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive space-y-2">
                                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                                    <div className="font-semibold">Save error</div>
-                                    <button
-                                        type="button"
-                                        onClick={copyErrorToClipboard}
-                                        className="text-xs underline underline-offset-2"
-                                    >
-                                        Copy error
-                                    </button>
+                                    <div className="font-semibold">Save error - Full details below</div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={copyErrorToClipboard}
+                                            className="text-xs underline underline-offset-2"
+                                        >
+                                            Copy error
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSaveError("")}
+                                            className="text-xs underline underline-offset-2"
+                                        >
+                                            Dismiss
+                                        </button>
+                                    </div>
                                 </div>
                                 <textarea
                                     readOnly
                                     value={saveError}
-                                    className="w-full min-h-[96px] rounded-md border border-destructive/50 bg-background p-2 text-xs font-mono text-foreground resize-y"
+                                    className="w-full min-h-[200px] rounded-md border border-destructive/50 bg-background p-2 text-xs font-mono text-foreground resize-y"
                                 />
-                                <div className="text-xs text-muted-foreground">Long press or tap copy to copy the full error details.</div>
+                                <div className="text-xs text-muted-foreground">This error will persist until you dismiss it or save successfully. Copy the full details to share for debugging.</div>
                             </div>
                         )}
                         {/* Dates Group */}

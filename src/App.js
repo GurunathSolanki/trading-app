@@ -174,7 +174,7 @@ function AppContent() {
           }
         }
         const fullError = error && typeof error === 'object'
-          ? `${errorMessage}\n\n${JSON.stringify(error, null, 2)}`
+          ? `${errorMessage}\n\nError Details:\n${JSON.stringify(error, null, 2)}${error.stack ? `\n\nStack Trace:\n${error.stack}` : ''}`
           : errorMessage;
         setSaveError(fullError);
         toast.error(errorMessage);
@@ -196,7 +196,7 @@ function AppContent() {
         ? `Unexpected error while saving trade: ${unexpectedError.message}`
         : "Unexpected error while saving trade.";
       const fullUnexpected = unexpectedError && typeof unexpectedError === 'object'
-        ? `${unexpectedMessage}\n\n${JSON.stringify(unexpectedError, null, 2)}`
+        ? `${unexpectedMessage}\n\nError Details:\n${JSON.stringify(unexpectedError, null, 2)}${unexpectedError.stack ? `\n\nStack Trace:\n${unexpectedError.stack}` : ''}`
         : unexpectedMessage;
       setSaveError(fullUnexpected);
       toast.error(unexpectedMessage);
