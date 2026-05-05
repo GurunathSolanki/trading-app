@@ -24,6 +24,15 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
         }
     }, [editingId]);
 
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const year = date.getFullYear().toString().slice(-2);
+        return `${day}-${month}-${year}`;
+    };
+
     // Sorting and filtering logic
     const sortedTrades = [...trades].sort((a, b) => {
         const aVal = a[sortField] || '';
@@ -299,8 +308,8 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                             <tbody>
                                 {sortedTrades.map((t) => (
                                     <tr key={t.id} className="border-b hover:bg-muted/50 transition-colors duration-150">
-                                        <td className="p-2">{t.entry_date}</td>
-                                        <td className="p-2">{t.exit_date}</td>
+                                        <td className="p-2">{formatDate(t.entry_date)}</td>
+                                        <td className="p-2">{formatDate(t.exit_date)}</td>
                                         <td className="p-2">{formatIndianNumber(t.options_trading_amount)}</td>
                                         <td className="p-2">{formatIndianNumber(t.required_profit)}</td>
                                         <td className="p-2">{formatIndianNumber(t.interest)}</td>
