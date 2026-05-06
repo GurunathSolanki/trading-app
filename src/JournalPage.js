@@ -52,7 +52,9 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
         const newDisplayValues = {};
         fieldsToFormat.forEach(field => {
             const value = form[field];
-            newDisplayValues[field] = value ? formatIndianNumber(value) : '';
+            newDisplayValues[field] = value !== undefined && value !== null && value !== ''
+                ? formatIndianNumber(value)
+                : '';
         });
         setDisplayValues(newDisplayValues);
     }, [form]);
@@ -233,7 +235,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                     <Label htmlFor="mf-amount">MF Trading Amount</Label>
                                     <Input
                                         id="mf-amount"
-                                        type="number"
+                                        type="text"
                                         placeholder="MF investment amount"
                                         value={displayValues.mf_trading_amount}
                                         onChange={(e) => handleInputChange("mf_trading_amount", e.target.value)}
