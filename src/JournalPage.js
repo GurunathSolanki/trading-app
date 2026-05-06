@@ -12,6 +12,14 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
     const [sortOrder, setSortOrder] = useState('desc');
     const [filter, setFilter] = useState('all'); // 'all', 'winning', 'losing'
 
+    const [displayValues, setDisplayValues] = useState({
+        options_trading_amount: '',
+        interest: '',
+        actual_profit: '',
+        mf_trading_amount: '',
+        pnl: ''
+    });
+
     const firstFieldRef = useRef(null);
 
     useEffect(() => {
@@ -23,6 +31,31 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
             firstFieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }, [editingId]);
+
+    const handleInputChange = (field, value) => {
+        // For number fields, handle Indian number formatting
+        const rawValue = value.replace(/,/g, ''); // remove existing commas
+        if (rawValue === '' || /^\d*\.?\d*$/.test(rawValue)) { // allow numbers and optional decimal
+            const numValue = rawValue === '' ? '' : parseFloat(rawValue);
+            handleChange(field, numValue);
+            const formatted = rawValue === '' ? '' : formatIndianNumber(numValue);
+            setDisplayValues(prev => ({
+                ...prev,
+                [field]: formatted
+            }));
+        }
+    };
+
+    // Initialize display values when form changes (for editing)
+    useEffect(() => {
+        const fieldsToFormat = ['options_trading_amount', 'interest', 'actual_profit', 'mf_trading_amount', 'pnl'];
+        const newDisplayValues = {};
+        fieldsToFormat.forEach(field => {
+            const value = form[field];
+            newDisplayValues[field] = value ? formatIndianNumber(value) : '';
+        });
+        setDisplayValues(newDisplayValues);
+    }, [form]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -130,10 +163,10 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                     <Label htmlFor="options-amount">Options Amount</Label>
                                     <Input
                                         id="options-amount"
-                                        type="number"
+                                        type="text"
                                         placeholder="Enter amount in INR"
-                                        value={form.options_trading_amount}
-                                        onChange={(e) => handleChange("options_trading_amount", e.target.value)}
+                                        value={displayValues.options_trading_amount}
+                                        onChange={(e) => handleInputChange("options_trading_amount", e.target.value)}
                                         disabled={submitting}
                                     />
                                 </div>
@@ -151,10 +184,10 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                     <Label htmlFor="interest">Interest</Label>
                                     <Input
                                         id="interest"
-                                        type="number"
+                                        type="text"
                                         placeholder="Interest earned"
-                                        value={form.interest || ""}
-                                        onChange={(e) => handleChange("interest", e.target.value)}
+                                        value={displayValues.interest}
+                                        onChange={(e) => handleInputChange("interest", e.target.value)}
                                         disabled={submitting}
                                     />
                                 </div>
@@ -162,10 +195,10 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                     <Label htmlFor="actual-profit">Actual Profit</Label>
                                     <Input
                                         id="actual-profit"
-                                        type="number"
+                                        type="text"
                                         placeholder="Actual profit/loss"
-                                        value={form.actual_profit || ""}
-                                        onChange={(e) => handleChange("actual_profit", e.target.value)}
+                                        value={displayValues.actual_profit}
+                                        onChange={(e) => handleInputChange("actual_profit", e.target.value)}
                                         disabled={submitting}
                                     />
                                 </div>
@@ -202,8 +235,8 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         id="mf-amount"
                                         type="number"
                                         placeholder="MF investment amount"
-                                        value={form.mf_trading_amount || ""}
-                                        onChange={(e) => handleChange("mf_trading_amount", e.target.value)}
+                                        value={displayValues.mf_trading_amount}
+                                        onChange={(e) => handleInputChange("mf_trading_amount", e.target.value)}
                                         disabled={submitting}
                                     />
                                 </div>
@@ -211,10 +244,10 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                     <Label htmlFor="pnl">PnL</Label>
                                     <Input
                                         id="pnl"
-                                        type="number"
+                                        type="text"
                                         placeholder="Profit/Loss"
-                                        value={form.pnl || ""}
-                                        onChange={(e) => handleChange("pnl", e.target.value)}
+                                        value={displayValues.pnl}
+                                        onChange={(e) => handleInputChange("pnl", e.target.value)}
                                         disabled={submitting}
                                     />
                                 </div>
