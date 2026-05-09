@@ -1,7 +1,9 @@
 import {
   calculateRequiredProfit,
   calculateAnnualizedPercent,
-  getCompleteTrades
+  getCompleteTrades,
+  calculateVolatility,
+  calculateSharpeRatio
 } from './tradingUtils';
 
 describe('Trading Utilities', () => {
@@ -118,6 +120,37 @@ describe('Trading Utilities', () => {
         { options_trading_amount: null }
       ];
       expect(getCompleteTrades(trades)).toEqual([]);
-    });
-  });
-});
+      });
+      });
+
+      describe('calculateVolatility', () => {
+      test('calculates standard deviation correctly', () => {
+      const returns = [10, 20, 30]; // mean = 20
+      // variance = ((10-20)^2 + (20-20)^2 + (30-20)^2) / (3-1)
+      // variance = (100 + 0 + 100) / 2 = 100
+      // stdDev = sqrt(100) = 10
+      expect(calculateVolatility(returns)).toBe(10);
+      });
+
+      test('returns 0 for single value or empty array', () => {
+      expect(calculateVolatility([10])).toBe(0);
+      expect(calculateVolatility([])).toBe(0);
+      });
+      });
+
+      describe('calculateSharpeRatio', () => {
+      test('calculates sharpe ratio correctly', () => {
+      // (15 - 7) / 4 = 8 / 4 = 2.00
+      expect(calculateSharpeRatio(15, 4, 7)).toBe('2.00');
+      });
+
+      test('handles zero standard deviation', () => {
+      expect(calculateSharpeRatio(15, 0, 7)).toBe('0.00');
+      });
+
+      test('uses default risk free rate of 7%', () => {
+      // (17 - 7) / 5 = 10 / 5 = 2.00
+      expect(calculateSharpeRatio(17, 5)).toBe('2.00');
+      });
+      });
+      });

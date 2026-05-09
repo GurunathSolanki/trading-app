@@ -27,40 +27,50 @@ export default function PerformanceChart({ trades }) {
   // Calculate cumulative data
   let cumulativeOptions = 0;
   let cumulativeMF = 0;
+  let cumulativeGrowthPct = 0;
+  
   const cumulativeOptionsData = trades.map(t => cumulativeOptions += parseFloat(t.total_profit || 0));
   const cumulativeMFData = trades.map(t => cumulativeMF += parseFloat(t.pnl || 0));
+  const cumulativeGrowthPctData = trades.map(t => {
+      const dailySum = (parseFloat(t.percent || 0) + parseFloat(t.mf_profit || 0));
+      return cumulativeGrowthPct += dailySum;
+  });
 
   const data = {
-    labels: trades.map(t => t.exit_date),
+    labels: trades.map(t => {
+      const date = new Date(t.exit_date);
+      return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+    }),
     datasets: [
       {
         label: showAbsolute ? "Options Cumulative Profit" : "Options %",
         data: showAbsolute ? cumulativeOptionsData : trades.map(t => t.percent),
-        borderColor: "#0f766e",
-        backgroundColor: "rgba(15, 118, 110, 0.18)",
-        pointBackgroundColor: "#0f766e",
+        borderColor: "hsl(15 100% 23%)", // Rust (Primary)
+        backgroundColor: "rgba(117, 31, 0, 0.1)",
+        pointBackgroundColor: "hsl(15 100% 23%)",
         tension: 0.3,
-        fill: true,
+        fill: showAbsolute,
       },
       {
         label: showAbsolute ? "MF Cumulative PnL" : "MF %",
         data: showAbsolute ? cumulativeMFData : trades.map(t => t.mf_profit),
-        borderColor: "#dc3545",
-        backgroundColor: "rgba(220, 53, 69, 0.18)",
-        pointBackgroundColor: "#dc3545",
+        borderColor: "hsl(45 93% 47%)", // Amber (Accent)
+        backgroundColor: "rgba(232, 174, 8, 0.1)",
+        pointBackgroundColor: "hsl(45 93% 47%)",
         tension: 0.3,
-        fill: true,
+        fill: showAbsolute,
       },
       {
-        label: "Cumulative Growth",
+        label: "Cumulative Growth Trend",
         data: showAbsolute
           ? cumulativeOptionsData.map((v, i) => v + cumulativeMFData[i])
-          : trades.map(t => Number(t.percent || 0) + Number(t.mf_profit || 0)),
-        borderColor: "#6d28d9",
-        backgroundColor: "rgba(109, 40, 217, 0.12)",
+          : cumulativeGrowthPctData,
+        borderColor: "#6d28d9", // purple
+        backgroundColor: "rgba(109, 40, 217, 0.05)",
         pointBackgroundColor: "#6d28d9",
         tension: 0.3,
         fill: false,
+        borderDash: [5, 5], // dashed line for the trend
       },
     ],
   };
@@ -91,13 +101,14 @@ export default function PerformanceChart({ trades }) {
     }
   };
 
-  const avgOptionsPercent = trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.percent || 0), 0) / trades.length).toFixed(2) : 0;
-  const avgMFPercent = trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.mf_profit || 0), 0) / trades.length).toFixed(2) : 0;
+  const avgOptionsPercent = trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.percent || 0), 0) / trades.length).toFixed(2) : "0.00";
+  const avgMFPercent = trades.length > 0 ? (trades.reduce((sum, t) => sum + parseFloat(t.mf_profit || 0), 0) / trades.length).toFixed(2) : "0.00";
+  const totalGrowthPercent = (parseFloat(avgOptionsPercent) + parseFloat(avgMFPercent)).toFixed(2);
 
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Options %</CardTitle>
@@ -106,7 +117,7 @@ export default function PerformanceChart({ trades }) {
           <CardContent>
             <div className={`text-2xl font-bold ${getPLColor(avgOptionsPercent)}`}>{avgOptionsPercent}%</div>
             <p className="text-xs text-muted-foreground">
-              Annualized return on options trading
+              Avg annualized return (Options)
             </p>
           </CardContent>
         </Card>
@@ -119,7 +130,20 @@ export default function PerformanceChart({ trades }) {
           <CardContent>
             <div className={`text-2xl font-bold ${getPLColor(avgMFPercent)}`}>{avgMFPercent}%</div>
             <p className="text-xs text-muted-foreground">
-              Annualized return on mutual funds
+              Avg annualized return (MF)
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-indigo-200 bg-indigo-50/30 dark:bg-indigo-950/10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Combined Growth %</CardTitle>
+            {getPLIcon(totalGrowthPercent)}
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${getPLColor(totalGrowthPercent)}`}>{totalGrowthPercent}%</div>
+            <p className="text-xs text-muted-foreground">
+              Total combined annualized return
             </p>
           </CardContent>
         </Card>

@@ -1,14 +1,23 @@
 // Mock all external dependencies at the top level
 jest.mock('react-router-dom');
 
-jest.mock('./supabaseClient', () => ({
-  __esModule: true,
-  supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() => Promise.resolve({ data: [], error: null }))
-    }))
-  }
-}));
+jest.mock('./supabaseClient', () => {
+  const mockSelect = jest.fn().mockReturnThis();
+  const mockFrom = jest.fn(() => ({
+    select: mockSelect,
+    update: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    then: jest.fn(cb => Promise.resolve({ data: [], error: null }).then(cb))
+  }));
+
+  return {
+    __esModule: true,
+    supabase: {
+      from: mockFrom
+    }
+  };
+});
 
 jest.mock('react-toastify', () => ({
   ToastContainer: () => <div data-testid="toast-container" />,

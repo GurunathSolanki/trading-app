@@ -77,5 +77,31 @@ export function getCompleteTrades(trades) {
     );
 
     return hasTradeDates && allFieldsPopulated && allFieldsNonZero;
-  });
-}
+    });
+    }
+
+    /**
+    * Calculate volatility (standard deviation of daily returns)
+    * @param {Array} returns - Array of percentage returns
+    * @returns {number} Standard deviation
+    */
+    export function calculateVolatility(returns) {
+    if (!returns || returns.length <= 1) return 0;
+
+    const avg = returns.reduce((a, b) => a + b, 0) / returns.length;
+    const variance = returns.reduce((sq, n) => sq + Math.pow(n - avg, 2), 0) / (returns.length - 1);
+    return Math.sqrt(variance);
+    }
+
+    /**
+    * Calculate Sharpe Ratio
+    * @param {number} avgReturn - Average return
+    * @param {number} stdDev - Standard deviation
+    * @param {number} riskFreeRate - Risk-free rate (default 7%)
+    * @returns {string} Sharpe Ratio with 2 decimal places
+    */
+    export function calculateSharpeRatio(avgReturn, stdDev, riskFreeRate = 7) {
+    if (!stdDev || stdDev === 0) return "0.00";
+    const result = (avgReturn - riskFreeRate) / stdDev;
+    return result.toFixed(2);
+    }

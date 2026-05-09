@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { Edit, ArrowUpDown } from "lucide-react";
+import { Edit, ArrowUpDown, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
@@ -82,6 +82,43 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
 
     // Validation
     const isFormValid = form.entry_date;
+
+    const exportToCSV = () => {
+        if (trades.length === 0) return;
+        
+        const headers = [
+            "Entry Date", "Exit Date", "Options Amount", "Required Profit", 
+            "Interest", "Actual Profit", "Total Profit", "Percent", 
+            "MF Amount", "PnL", "MF Profit"
+        ];
+        
+        const csvContent = [
+            headers.join(","),
+            ...trades.map(t => [
+                t.entry_date,
+                t.exit_date,
+                t.options_trading_amount,
+                t.required_profit,
+                t.interest,
+                t.actual_profit,
+                t.total_profit,
+                t.percent,
+                t.mf_trading_amount,
+                t.pnl,
+                t.mf_profit
+            ].join(","))
+        ].join("\n");
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `trading_journal_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     const copyErrorToClipboard = () => {
         if (!saveError || !navigator.clipboard) return;
@@ -294,7 +331,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                         <CardTitle>Trade History</CardTitle>
                         <div className="flex flex-wrap gap-2">
                             <select
-                                className="px-3 py-1 text-sm border border-input bg-background rounded-md"
+                                className="px-3 py-1 text-base md:text-sm border border-input bg-background rounded-md"
                                 onChange={(e) => setFilter(e.target.value)}
                                 value={filter}
                             >
@@ -303,7 +340,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                 <option value="losing">Losing Only</option>
                             </select>
                             <select
-                                className="px-3 py-1 text-sm border border-input bg-background rounded-md"
+                                className="px-3 py-1 text-base md:text-sm border border-input bg-background rounded-md"
                                 onChange={(e) => setSortField(e.target.value)}
                                 value={sortField}
                             >
@@ -318,6 +355,16 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                             >
                                 <ArrowUpDown className="h-4 w-4" />
                             </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={exportToCSV}
+                                disabled={trades.length === 0}
+                                title="Export to CSV"
+                            >
+                                <Download className="h-4 w-4 mr-1" />
+                                Export
+                            </Button>
                         </div>
                     </div>
                 </CardHeader>
@@ -326,23 +373,32 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                         <table className="w-full border-collapse">
                             <thead className="sticky-header">
                                 <tr className="border-b">
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Entry Date</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Exit Date</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Options Amount</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Required Profit</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Interest</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Actual Profit</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Total Profit</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Percent</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">MF Amount</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">PnL</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">MF Profit</th>
-                                    <th className="text-left p-2 font-medium bg-white sticky top-0 z-10">Actions</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Entry Date</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Exit Date</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Options Amount</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Required Profit</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Interest</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Actual Profit</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Total Profit</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Percent</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">MF Amount</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">PnL</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">MF Profit</th>
+                                    <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {sortedTrades.map((t) => (
-                                    <tr key={t.id} className="border-b hover:bg-muted/50 transition-colors duration-150">
+                                {sortedTrades.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="12" className="p-12 text-center text-muted-foreground italic">
+                                            <div className="flex flex-col items-center justify-center gap-2">
+                                                <span>No trades yet — add your first trade to start tracking!</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    sortedTrades.map((t) => (
+                                        <tr key={t.id} className="border-b hover:bg-muted/50 transition-colors duration-150">
                                         <td className="p-2">{formatDate(t.entry_date)}</td>
                                         <td className="p-2">{formatDate(t.exit_date)}</td>
                                         <td className="p-2">{formatIndianNumber(t.options_trading_amount)}</td>
@@ -398,7 +454,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                             </Button>
                                         </td>
                                     </tr>
-                                ))}
+                                )))}
                             </tbody>
                         </table>
                     </div>

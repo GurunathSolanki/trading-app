@@ -4,10 +4,11 @@ import JournalPage from "./JournalPage";
 import PerformancePage from "./PerformancePage";
 import DashboardPage from "./DashboardPage";
 import MarginCalculatorPage from "./MarginCalculatorPage";
+import SettingsPage from "./SettingsPage";
 import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, LineChart } from "lucide-react";
 import { getCompleteTrades, calculateAnnualizedPercent } from "./lib/tradingUtils";
 import "./App.css";
 
@@ -55,7 +56,7 @@ function AppContent() {
 
   // Helper function to filter only complete trades for calculations
   const getCompleteTradesFiltered = (tradesArray) => {
-    return getCompleteTrades(tradesArray);
+    return getCompleteTrades(tradesArray).sort((a, b) => new Date(a.exit_date) - new Date(b.exit_date));
   };
 
   useEffect(() => {
@@ -66,7 +67,6 @@ function AppContent() {
 
   async function fetchTrades() {
     setLoading(true);
-    console.log("Fetching trades from Supabase...");
 
     if (!supabase || typeof supabase.from !== "function") {
       console.warn("Supabase client is unavailable or mocked incorrectly.");
@@ -322,8 +322,9 @@ function AppContent() {
             <div className="flex items-center">
               {/* Brand */}
               <div className="flex-shrink-0 flex items-center">
-                <div className="text-2xl font-bold text-primary">
-                  Trading Journal
+                <div className="flex items-center gap-2 text-2xl font-bold text-primary">
+                  <LineChart className="h-8 w-8" />
+                  <span>Trading Journal</span>
                 </div>
               </div>
             </div>
@@ -377,6 +378,18 @@ function AppContent() {
                 }
               >
                 Margin Calculator
+              </NavLink>
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  }`
+                }
+              >
+                Settings
               </NavLink>
             </div>
 
@@ -466,6 +479,19 @@ function AppContent() {
           >
             Margin Calculator
           </NavLink>
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Settings
+          </NavLink>
           <button
             type="button"
             onClick={() => { setDarkMode(!darkMode); setMobileMenuOpen(false); }}
@@ -504,6 +530,7 @@ function AppContent() {
           } />
           <Route path="/performance" element={<PerformancePage trades={getCompleteTradesFiltered(trades)} />} />
           <Route path="/margin-calculator" element={<MarginCalculatorPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
 

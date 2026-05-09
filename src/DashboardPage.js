@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { formatIndianNumber } from "./lib/utils";
+import { calculateVolatility, calculateSharpeRatio } from "./lib/tradingUtils";
 
 export default function DashboardPage({ trades = [] }) {
   const [timePeriod, setTimePeriod] = useState('all');
@@ -77,6 +78,12 @@ export default function DashboardPage({ trades = [] }) {
   const bestTrade = totalTrades > 0 ? Math.max(...filteredTrades.map(t => parseFloat(t.total_profit || 0))) : 0;
   const worstTrade = totalTrades > 0 ? Math.min(...filteredTrades.map(t => parseFloat(t.total_profit || 0))) : 0;
 
+  // Analytics using tradingUtils
+  const allPercents = filteredTrades.map(t => (parseFloat(t.percent || 0) + parseFloat(t.mf_profit || 0)));
+  const avgPercent = allPercents.length > 0 ? allPercents.reduce((a, b) => a + b, 0) / allPercents.length : 0;
+  const stdDev = calculateVolatility(allPercents).toFixed(2);
+  const sharpeRatio = calculateSharpeRatio(avgPercent, parseFloat(stdDev));
+
   const formatCurrency = (amount) => {
     const formatted = formatIndianNumber(amount);
     return `₹${formatted}`;
@@ -86,6 +93,21 @@ export default function DashboardPage({ trades = [] }) {
   const getPLIcon = (amount) => amount >= 0 ?
     <ArrowUpIcon className="h-4 w-4 text-green-600" /> :
     <ArrowDownIcon className="h-4 w-4 text-red-600" />;
+
+  if (trades.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 text-center animate-in fade-in-0 duration-500">
+        <Activity className="h-16 w-16 text-muted-foreground opacity-20" />
+        <h2 className="text-2xl font-semibold tracking-tight">No trades tracked yet</h2>
+        <p className="text-muted-foreground max-w-md">
+          Your dashboard will come alive once you start adding trades to your journal.
+        </p>
+        <Button asChild className="mt-4">
+          <Link to="/">Add Your First Trade</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in-0 duration-500">
@@ -230,6 +252,32 @@ export default function DashboardPage({ trades = [] }) {
             <div className="text-2xl font-bold text-red-600">{formatCurrency(avgLoss)}</div>
             <p className="text-xs text-muted-foreground">
               Average loss per losing trade
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
+            <Scale className="h-4 w-4 text-indigo-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-indigo-600">{sharpeRatio}</div>
+            <p className="text-xs text-muted-foreground">
+              Risk-adjusted return (Rf = 7%)
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Volatility (StdDev)</CardTitle>
+            <Activity className="h-4 w-4 text-orange-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">{stdDev}%</div>
+            <p className="text-xs text-muted-foreground">
+              Standard deviation of daily returns
             </p>
           </CardContent>
         </Card>

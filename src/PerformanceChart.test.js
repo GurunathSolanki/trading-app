@@ -73,6 +73,7 @@ describe('PerformanceChart', () => {
 
     expect(screen.getByText('Avg Options %')).toBeInTheDocument();
     expect(screen.getByText('Avg MF %')).toBeInTheDocument();
+    expect(screen.getByText('Combined Growth %')).toBeInTheDocument();
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
   });
 
@@ -102,7 +103,7 @@ describe('PerformanceChart', () => {
   test('handles empty trades array', () => {
     render(<PerformanceChart trades={[]} />);
 
-    expect(screen.getAllByText('0%')).toHaveLength(2); // Both options and MF show 0%
+    expect(screen.getAllByText('0.00%')).toHaveLength(3); // options, MF, and combined show 0.00%
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
   });
 
@@ -122,8 +123,8 @@ describe('PerformanceChart', () => {
 
     render(<PerformanceChart trades={mixedTrades} />);
 
-    // Should have both up and down arrows
-    expect(screen.getByTestId('arrow-up-icon')).toBeInTheDocument();
+    // Should have both up and down arrows (multiple up arrows now with Combined Growth)
+    expect(screen.getAllByTestId('arrow-up-icon').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByTestId('arrow-down-icon')).toBeInTheDocument();
   });
 
