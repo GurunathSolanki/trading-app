@@ -15,11 +15,19 @@ npm run build             # Production build to /build
 
 ## Architecture
 
-Create React App (React 19) single-page application — a personal trading journal for tracking Options and Mutual Fund trades. Uses shadcn/ui components (Radix primitives + Tailwind CSS) and Supabase for the database backend.
+Create React App (React 19) single-page application — a personal trading journal for tracking Options and Mutual Fund trades. Uses shadcn/ui components (Radix primitives + Tailwind CSS), Supabase for the database backend, Chart.js for performance charts, and react-toastify for notifications.
+
+### Theme
+
+Custom CSS custom properties in `src/index.css` (not shadcn's default palette):
+- Primary: rust/burnt orange (`hsl(15 100% 23%)`)
+- Accent: amber/gold (`hsl(45 93% 47%)`)
+- Dark mode variant is also defined via a `.dark` selector
+- Mobile inputs use `font-size: 16px` to prevent iOS zoom-on-focus
 
 ### State & data flow
 
-`App.js` owns all trade state and acts as the single source of truth. It fetches from the `trading` table in Supabase on mount (via `AppContent.fetchTrades`, gated with `useRef` to prevent double-fetch in Strict Mode). The `form` object and all CRUD handlers (`addTrade`, `startEdit`, `cancelEdit`, `handleChange`) live in `App.js` and are passed down as props to page components.
+`App.js` owns all trade state and acts as the single source of truth. It fetches from the `trading` table in Supabase on mount (via `AppContent.fetchTrades`, gated with `useRef` to prevent double-fetch in Strict Mode). The `form` object and all CRUD handlers (`addTrade`, `startEdit`, `cancelEdit`, `handleChange`) live in `App.js` and are passed down as props to page components. The navbar with mobile menu is also rendered directly in `AppContent`.
 
 - `AppContent` → `JournalPage` receives `trades`, `form`, `handleChange`, `addTrade`, `startEdit`, `cancelEdit`, `submitting`, `editingId`, `saveError`, `setSaveError`
 - `AppContent` → `DashboardPage` receives `trades` (filtered: only complete trades via `getCompleteTrades`)
@@ -30,27 +38,41 @@ Create React App (React 19) single-page application — a personal trading journ
 
 | Route | Component | Purpose |
 |---|---|---|
-| `/` | `JournalPage` | Add/edit trade form + sortable/filterable trade history table |
-| `/dashboard` | `DashboardPage` | KPIs: total P&L, win rate, profit factor, best/worst trade, time-period filter |
+| `/` | `JournalPage` | Add/edit trade form + sortable/filterable trade history table with Indian number formatting |
+| `/dashboard` | `DashboardPage` | KPIs: total P&L, win rate, profit factor, best/worst trade, time-period filter (daily/weekly/monthly/all) |
 | `/performance` | `PerformancePage` | Chart.js line chart comparing Options % vs MF % with absolute/percentage toggle |
 | `/margin-calculator` | `MarginCalculatorPage` | Standalone calculator: lot distribution and profit based on margin inputs |
 
 ### Key calculations (`src/lib/tradingUtils.js`)
 
-- `calculateRequiredProfit(entry, exit, amount)` — `(amount * 16 * days) / (100 * 365)`, rounded to integer
+- `calculateRequiredProfit(entry, exit, amount)` — `(amount * 16 * days) / (100 * 365)`, rounded to integer (16% annual return model)
 - `calculateAnnualizedPercent(profit, entry, exit, amount)` — `(profit * 365 * 100) / (days * amount)`, returns `toFixed(2)` string
-- `getCompleteTrades(trades)` — filters to trades where all numeric fields are non-null and non-zero
+- `getCompleteTrades(trades)` — filters to trades where all numeric fields are non-null, non-empty, and non-zero
 
 These are duplicated inline in `App.js`'s `handleChange` for real-time form auto-calculation; the exported versions are the canonical implementations.
 
+### Margin Calculator (`src/MarginCalculatorPage.js`)
+
+Exports `calculateMarginResults(marginForOneOrder, totalMarginAvailable, totalPoints)` and constants `LOT_SIZE = 65`, `ORDER_SIZE = 1755` — all three are imported directly in tests. Uses Indian number formatting for margin input fields.
+
 ### Supabase (`src/supabaseClient.js`)
 
-Reads `REACT_APP_SUPABASE_URL` and `REACT_APP_SUPABASE_KEY` from environment variables (`.env` file, gitignored). The `trading` table is the single database table. The `src/__mocks__/supabaseClient.js` provides a chainable stub for tests.
+Reads `REACT_APP_SUPABASE_URL` and `REACT_APP_SUPABASE_KEY` from environment variables (`.env` file, gitignored). The `trading` table is the single database table. No mock file exists for supabaseClient — tests use inline `jest.mock('./supabaseClient', ...)` in each test file.
 
 ### UI system
 
-shadcn/ui components live in `src/components/ui/` (button, card, input, label). Tailwind CSS with CSS custom properties for theming (defined in `src/index.css` via shadcn's default slate palette). `src/lib/utils.js` exports `cn()` (clsx + tailwind-merge) and `formatIndianNumber()` (Indian comma-numbering format).
+shadcn/ui components live in `src/components/ui/` (button, card, input, label). Tailwind CSS. `src/lib/utils.js` exports `cn()` (clsx + tailwind-merge) and `formatIndianNumber()` (Indian comma-numbering format — groups last 3 digits, then pairs).
 
-### Tests
+### Tests (5 test files)
 
-Jest + React Testing Library. Three test suite files: `tradingUtils.test.js` (11 tests, core calculation logic), `PerformancePage.test.js` (1 test), `PerformanceChart.test.js` (7 tests). Mocks in `src/__mocks__/` stub react-router-dom (BrowserRouter, Routes, Route, NavLink, Outlet, useLocation) and supabaseClient.
+| File | Tests | Notes |
+|---|---|---|
+| `tradingUtils.test.js` | 11 | Core calculation logic — no mocking needed |
+| `PerformanceChart.test.js` | 7 | Heavily mocked: chart.js, react-chartjs-2, lucide-react, UI components |
+| `MarginCalculatorPage.test.js` | 9+ | Tests exported `calculateMarginResults` function directly |
+| `PerformancePage.test.js` | 2 | Mocks PerformanceChart child and UI components |
+| `App.test.js` | 1 | Mocks all pages, supabaseClient, and react-toastify |
+
+Mock files in `src/__mocks__/`:
+- `react-router-dom.js` — stubs BrowserRouter, Routes, Route, NavLink (renders as `<a>`)
+- All other mocks (supabaseClient, react-toastify, chart.js, lucide-react, UI components) use inline `jest.mock()` calls in individual test files

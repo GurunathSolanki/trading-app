@@ -7,6 +7,7 @@ import MarginCalculatorPage from "./MarginCalculatorPage";
 import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
+import { Sun, Moon } from "lucide-react";
 import { getCompleteTrades, calculateAnnualizedPercent } from "./lib/tradingUtils";
 import "./App.css";
 
@@ -36,6 +37,21 @@ function AppContent() {
 
   const [editingId, setEditingId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   // Helper function to filter only complete trades for calculations
   const getCompleteTradesFiltered = (tradesArray) => {
@@ -364,9 +380,20 @@ function AppContent() {
               </NavLink>
             </div>
 
-            {/* Mobile menu button */}
-            <div className="sm:hidden">
+            {/* Theme Toggle + Mobile button */}
+            <div className="flex items-center space-x-2">
               <button
+                type="button"
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary transition-colors"
+                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+
+              {/* Mobile menu button */}
+              <div className="sm:hidden">
+                <button
                 type="button"
                 className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                 aria-controls="mobile-menu"
@@ -438,6 +465,14 @@ function AppContent() {
           >
             Margin Calculator
           </NavLink>
+          <button
+            type="button"
+            onClick={() => { setDarkMode(!darkMode); setMobileMenuOpen(false); }}
+            className="w-full flex items-center px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            {darkMode ? <Sun className="h-5 w-5 mr-2" /> : <Moon className="h-5 w-5 mr-2" />}
+            {darkMode ? "Light Mode" : "Dark Mode"}
+          </button>
         </div>
       </div>
 
