@@ -371,7 +371,7 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                 <CardContent>
                     <div className="overflow-x-auto" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
                         <table className="w-full border-collapse">
-                            <thead className="sticky-header">
+                            <thead>
                                 <tr className="border-b">
                                     <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Entry Date</th>
                                     <th className="text-left p-2 font-medium bg-card sticky top-0 z-10">Exit Date</th>
