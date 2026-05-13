@@ -6,10 +6,13 @@ export function cn(...inputs) {
 }
 
 export function formatIndianNumber(num) {
-  if (num === null || num === undefined || isNaN(num)) return num;
+  if (num === null || num === undefined || isNaN(num) || num === "") return num;
 
   const numStr = num.toString();
-  const [integerPart, decimalPart] = numStr.split('.');
+  const isNegative = numStr.startsWith('-');
+  const absNumValue = Math.abs(parseFloat(num));
+  const absNumStr = absNumValue.toString();
+  const [integerPart, decimalPart] = absNumStr.split('.');
 
   // Handle Indian numbering system
   const lastThree = integerPart.slice(-3);
@@ -20,5 +23,6 @@ export function formatIndianNumber(num) {
     formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
   }
 
-  return decimalPart ? formatted + "." + decimalPart : formatted;
+  const result = decimalPart ? formatted + "." + decimalPart : formatted;
+  return isNegative ? "-" + result : result;
 }

@@ -34,11 +34,20 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
 
     const handleInputChange = (field, value) => {
         // For number fields, handle Indian number formatting
+        // We allow leading minus for negative values and preserve decimals while typing
         const rawValue = value.replace(/,/g, ''); // remove existing commas
-        if (rawValue === '' || /^\d*\.?\d*$/.test(rawValue)) { // allow numbers and optional decimal
-            const numValue = rawValue === '' ? '' : parseFloat(rawValue);
+        
+        // Regex to allow: empty, just minus, numbers with optional decimal and leading minus
+        if (rawValue === '' || rawValue === '-' || /^-?\d*\.?\d*$/.test(rawValue)) {
+            const numValue = (rawValue === '' || rawValue === '-' || rawValue === '.' || rawValue === '-.') ? '' : parseFloat(rawValue);
             handleChange(field, numValue);
-            const formatted = rawValue === '' ? '' : formatIndianNumber(numValue);
+            
+            // Only format if it's a complete number and doesn't end with a dot
+            // This prevents the input from jumping/stripping characters while typing decimals or signs
+            const formatted = (rawValue === '' || rawValue === '-' || rawValue.endsWith('.')) 
+                ? rawValue 
+                : formatIndianNumber(parseFloat(rawValue));
+                
             setDisplayValues(prev => ({
                 ...prev,
                 [field]: formatted
