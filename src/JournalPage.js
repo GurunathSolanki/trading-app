@@ -417,8 +417,8 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         <td className="p-2">
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                 parseFloat(t.total_profit) >= 0
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                                             }`}>
                                                 {formatIndianNumber(t.total_profit)}
                                             </span>
@@ -426,8 +426,8 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         <td className="p-2">
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                 parseFloat(t.percent) >= 0
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                                             }`}>
                                                 {t.percent}%
                                             </span>
@@ -436,8 +436,8 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         <td className="p-2">
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                 t.pnl >= 0
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                                             }`}>
                                                 {formatIndianNumber(t.pnl)}
                                             </span>
@@ -445,8 +445,8 @@ export default function JournalPage({ trades = [], form = {}, handleChange, addT
                                         <td className="p-2">
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                 t.mf_profit >= 0
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                                             }`}>
                                                 {t.mf_profit}
                                             </span>
